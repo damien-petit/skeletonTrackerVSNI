@@ -1,4 +1,4 @@
-### CMake file for plugin_skeletonTracker
+### CMake file for plugin_skeletonTrackerVSNI
 ###
 ###    From the off-tree build directory, invoke:
 ###	 cmake <PATH_TO_vision_server>
@@ -12,7 +12,7 @@
 
 cmake_minimum_required (VERSION 2.6)
 
-project (skeletonTracker)
+project (skeletonTrackerVSNI)
 
 set( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /lib /usr/lib /usr/local/lib )
 set( CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} /usr/include /usr/local/include )
@@ -36,7 +36,7 @@ endforeach()
 find_package( vision )
 find_package( visionsystem )
 find_package( Boost 1.40.0 COMPONENTS system thread filesystem)
-FIND_PACKAGE(OpenCV REQUIRED )
+FIND_PACKAGE( OpenCV REQUIRED )
 
 ### Find OpenNI
 #add a hint so that it can find it without the pkg-config
@@ -45,7 +45,7 @@ find_path(OPENNI_INCLUDE_DIR XnStatus.h
           HINTS ${NESTK_ROOT_DIRS_HINTS} ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/ni /usr/include/openni
           PATHS "$ENV{PROGRAMFILES}/OpenNI/Include" "$ENV{PROGRAMW6432}/OpenNI/Include"
 #          PATH_SUFFIXES openni)
-            )
+         )
 
 #add a hint so that it can find it without the pkg-config
 find_library(OPENNI_LIBRARY
@@ -53,10 +53,7 @@ find_library(OPENNI_LIBRARY
              HINTS ${NESTK_ROOT_DIRS_HINTS} ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib
              PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib${OPENNI_SUFFIX}" "$ENV{PROGRAMW6432}/OpenNI/Lib${OPENNI_SUFFIX}"
              PATH_SUFFIXES lib
-)
-
-
-#
+            )
 
 # Load Pkgconfig macros
 INCLUDE(FindPkgConfig)
@@ -77,7 +74,6 @@ EXEC_PROGRAM(${PKG_CONFIG_EXECUTABLE} ARGS coshell-client --libs
 MESSAGE(STATUS "COSHELLCLIENT_LIBS: ${COSHELLCLIENT_LIBS}")
 ENDIF(COSHELLCLIENT_FOUND)
 
-
 ### Set include directories 
 #specify the headers of the extern libraries that we want to use        
 include_directories( ${Boost_INCLUDE_DIRS}
@@ -86,11 +82,10 @@ include_directories( ${Boost_INCLUDE_DIRS}
 		            ${VISIONSYSTEM_INCLUDE_DIRS} 
                     "${VISIONSYSTEM_INCLUDE_DIRS}/vs_controllers/openni/"
              	    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-				    "$ENV{HOME}/devel/include/aruco" )
+                    )
 
 include_directories(${OPENNI_INCLUDE_DIR})
 message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIR}, lib: ${OPENNI_LIBRARY})")
-
 
 ### File Lists
 
@@ -99,44 +94,34 @@ file( GLOB openni_hdr "src/*.h*")
 
 #		     ${DL_INCLUDE_DIR} )
 
-#aruco_include_dir:FILEPATH=/home/petit/devel/include/aruco
-#aruco_library_dir:FILEPATH=/home/petit/devel/lib
 
 #specify the binary files of the extern libraries that we want to link to
-link_directories( "${VISIONSYSTEM_LIBRARY_DIRS}" "${VISION_LIBRARY_DIR}" ${INSTALL_LIB_PATH}/vs_plugins ${INSTALL_LIB_PATH}/vs_controllers ${HOME}/devel/lib "${OPENNI_LIBRARY_DIR}")
-
-
+link_directories( "${VISIONSYSTEM_LIBRARY_DIRS}" "${VISION_LIBRARY_DIR}" ${INSTALL_LIB_PATH}/vs_plugins ${INSTALL_LIB_PATH}/vs_controllers "$ENV{HOME}/devel/lib" "${OPENNI_LIBRARY_DIR}")
 
 ### Go to subdirs
 
-SET( skeleton_tracker_lib_src 
-src/skeletonTracker.cpp
-src/bci-self-interact-imgproc.cpp
+SET( skeletonTrackerVSNI_lib_src 
+src/skeletonTrackerVSNI.cpp
 src/NISkeletonProc.cpp
-src/FaceDetectHaarOpenCVProc.cpp
 )
 
-SET( skeleton_tracker_lib_hdr
-include/skeletonTracker.h
-include/bci-self-interact-imgproc.h
+SET( skeletonTrackerVSNI_lib_hdr
+include/skeletonTrackerVSNI.h
 include/NISkeletonProc.h
 include/NISkeletonType.h
-# include/NISkeletonParser.h
-include/FaceDetectHaarOpenCVProc.h
 )
 
 #add library with option SHARED means compile the library dynamically
-add_library( "skeletonTracker" SHARED ${skeleton_tracker_lib_src} ${skeleton_tracker_lib_hdr} )
+add_library( "skeletonTrackerVSNI" SHARED ${skeletonTrackerVSNI_lib_src} ${skeletonTrackerVSNI_lib_hdr} )
 
 #link the extern libraries to the library that we want to compile
-target_link_libraries( "skeletonTracker" ${VISIONSYSTEM_LIBRARIES}
+target_link_libraries( "skeletonTrackerVSNI" ${VISIONSYSTEM_LIBRARIES}
 				     ${VISION_LIBRARIES} 
 				     ${OpenCV_LIBS} 
                      ${COSHELLCLIENT_LIBS}
                      GL configparser
 			 		 XmlRpc xmlrpc-server
 					 socket
-					 aruco
                      ${OPENNI_LIBRARY}
 #                     coshell-client
 		             )
@@ -169,7 +154,7 @@ target_link_libraries( "skeletonTracker" ${VISIONSYSTEM_LIBRARIES}
 
 ### INSTAll
 
-install( TARGETS "skeletonTracker" LIBRARY DESTINATION
+install( TARGETS "skeletonTrackerVSNI" LIBRARY DESTINATION
      "${INSTALL_LIB_PATH}/vs_plugins"  COMPONENT main )
 
 #install( TARGETS "build_voc"
@@ -184,5 +169,5 @@ install( TARGETS "skeletonTracker" LIBRARY DESTINATION
 #install( FILES test/test.bin data/recognition.voc
 #        DESTINATION ${CMAKE_BINARY_DIR}/test COMPONENT main)
 
-#install( FILES ${skeleton_tracker_lib_hdr} 
-#         DESTINATION "${INSTALL_HEADERS_PATH}/skeletonTracker/" COMPONENT main )
+#install( FILES ${skeletonTrackerVSNI_lib_hdr} 
+#         DESTINATION "${INSTALL_HEADERS_PATH}/skeletonTrackerVSNI/" COMPONENT main )
