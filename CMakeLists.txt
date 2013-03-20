@@ -102,12 +102,10 @@ link_directories( "${VISIONSYSTEM_LIBRARY_DIRS}" "${VISION_LIBRARY_DIR}" ${INSTA
 
 SET( skeletonTrackerVSNI_lib_src 
 src/skeletonTrackerVSNI.cpp
-src/NISkeletonProc.cpp
 )
 
 SET( skeletonTrackerVSNI_lib_hdr
 include/skeletonTrackerVSNI.h
-include/NISkeletonProc.h
 include/NISkeletonType.h
 )
 

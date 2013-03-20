@@ -55,11 +55,17 @@ std::cout << "Call " << #x << " took: " << (tv_diff.tv_sec + ((float)tv_diff.tv_
 
 namespace skeletonTrackerVSNI
 {
+//used to access the member of the class skeletonTrackerVSNI inside the static callback function of OpenNI
+    SkeletonTrackerVSNI* me_ = 0;
+
     SkeletonTrackerVSNI::SkeletonTrackerVSNI( visionsystem::VisionSystem *vs, string sandbox )
     : Plugin( vs, "skeletonTrackerVSNI", sandbox ), WithViewer(vs),
     XmlRpcServerMethod("GetObjectPosition", 0),
-    imgXi_(0), imgXd_(0),imgDispXi_(0), imgDispXd_(0)
+    imgXi_(0), imgXd_(0),imgDispXi_(0), imgDispXd_(0),
+    sandbox_(sandbox)
     {
+        me_ = this;
+
         cv::FileStorage dataToLoadOpenCV;
 
         if(!dataToLoadOpenCV.open(sandbox +"dataToLoadOpenCVFile.yml", cv::FileStorage::READ))
@@ -75,14 +81,49 @@ namespace skeletonTrackerVSNI
 
         dataToLoadOpenCV["coshellName_"] >> coshellName_;
 
+        dataToLoadOpenCV["maxUserDetected_"] >> maxUserDetected_;
+
+//used for detect faces in NISkeleton
+        dataToLoadOpenCV["NISkeletonFaceCascadeName_"] >> NISkeletonFacesCascadeName_;
+
+        //load different parameters for body parts detections
+        dataToLoadOpenCV["NISkeletonScaleFactorFace_"] >> NISkeletonScaleFactorFace_;
+        dataToLoadOpenCV["NISkeletonMinNeighborsFace_"] >> NISkeletonMinNeighborsFace_;
+        dataToLoadOpenCV["NISkeletonFlagsFace_"] >> NISkeletonFlagsFace_;
+        dataToLoadOpenCV["NISkeletonFaceCascadeName_"] >> NISkeletonFacesCascadeName_;
+        int NISkeletonMinSizeXFace_;
+        int NISkeletonMaxSizeXFace_;
+        int NISkeletonMinSizeYFace_;
+        int NISkeletonMaxSizeYFace_;
+
+        dataToLoadOpenCV["NISkeletonMinSizeXFace_"] >> NISkeletonMinSizeXFace_;
+        dataToLoadOpenCV["NISkeletonMaxSizeXFace_"] >> NISkeletonMaxSizeXFace_;
+        dataToLoadOpenCV["NISkeletonMinSizeYFace_"] >> NISkeletonMinSizeYFace_;
+        dataToLoadOpenCV["NISkeletonMaxSizeYFace_"] >> NISkeletonMaxSizeYFace_;
+
+        NISkeletonMinSizeFace_ = cv::Size(NISkeletonMinSizeXFace_,NISkeletonMinSizeYFace_);
+        NISkeletonMaxSizeFace_ = cv::Size(NISkeletonMaxSizeXFace_,NISkeletonMaxSizeYFace_);
+
+        dataToLoadOpenCV["NISkeletonROIWidth_"] >> NISkeletonROIWidth_;
+        dataToLoadOpenCV["NISkeletonROIHeight_"] >> NISkeletonROIHeight_;
+
         dataToLoadOpenCV.release();
+
+        if( !NISkeletonFacesCascade_.load( sandbox_ + NISkeletonFacesCascadeName_ ) )
+        { 
+            printf("--(!)Error loading NISkeletonFacesCascade_\n"); 
+        }
+
+//end used for detect faces in NISkeleton
 
         std::cout<<"coshellName_ "<<coshellName_<<std::endl;
 
         coshellVision_ = new coshell::CoshellClient(coshellName_, 2809, false);
         //We have to  initialize the coshell since we dont use coshell interpreter
         coshellVision_->Initialize();
-    
+
+        NISkeletonMatMono_.create(480,640, CV_8UC1);
+
     }
 
     SkeletonTrackerVSNI::~SkeletonTrackerVSNI()
@@ -157,12 +198,13 @@ namespace skeletonTrackerVSNI
             depthMD_ =  camXd->get_DepthMetaData();
         }
 
-
         register_glfunc();
 
         finish_ = true;
 
         whiteboard_write<SkeletonTrackerVSNI *>("plugin_skeletonTrackerVSNI", this);
+
+        initUserGen();
 
         return true ;
     }
@@ -182,6 +224,130 @@ namespace skeletonTrackerVSNI
             std::cout << "[skeletonTrackerVSNI] No XML-RPC server plugin registered to the server, no biggies" << std::endl;
         }
     }
+
+    void SkeletonTrackerVSNI::initUserGen()
+    {
+        XnStatus nRetVal = XN_STATUS_OK;
+
+        userGen_.Create(*context_);
+
+    //dans maim
+        if (!userGen_.IsCapabilitySupported(XN_CAPABILITY_SKELETON))
+        {
+            printf("Supplied user generator doesn't support skeleton\n");
+            //return 1;
+        }
+        else
+        {
+            printf("Supplied user generator support skeleton\n");
+        }
+
+        nRetVal = userGen_.RegisterUserCallbacks(User_NewUser, User_LostUser, NULL, hUserCallbacks_);
+    //    CHECK_RC(nRetVal, "Register to user callbacks");
+
+        userGen_.GetSkeletonCap().SetSkeletonProfile(XN_SKEL_PROFILE_UPPER);
+        printf("user generetor created and initialized but not started\n");
+
+    //need this to ensure that the userGenerator generate data since he is not created at the  same time that the note in the vs_core openni controller
+    //    context_->StartGeneratingAll();i
+
+   } 
+
+    void SkeletonTrackerVSNI::startUserGen()
+    {
+        userGen_.StartGenerating();
+
+        XnBool checkGenerate = userGen_.IsGenerating();
+        if(!checkGenerate)
+        {
+            std::cout<<"userGenerator failed to start"<<std::endl;
+        }
+        else
+        {
+            std::cout<<"userGenerator succeed to start"<<std::endl;
+        }
+    }
+
+    void SkeletonTrackerVSNI::stopUserGen()
+    {
+    }
+
+    // Callback: New user was detected
+    void SkeletonTrackerVSNI::User_NewUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie)
+    {
+        XnUInt32 epochTime = 0;
+        xnOSGetEpochTime(&epochTime);
+        printf("%d New User %d\n", epochTime, nId);
+        // New user found
+        // Load user's calibration from file
+        std::string nameUserCalibrationFile("UserCalibration.bin");
+        std::stringstream userCalibrationFilenPath;
+        userCalibrationFilenPath << me_->sandbox_;
+        userCalibrationFilenPath << nameUserCalibrationFile;
+
+        XnStatus rc = me_->userGen_.GetSkeletonCap().LoadCalibrationDataFromFile(nId, userCalibrationFilenPath.str().c_str());
+        if (rc == XN_STATUS_OK)
+        {
+            // Make sure state is coherent
+            me_->userGen_.GetPoseDetectionCap().StopPoseDetection(nId);
+            me_->userGen_.GetSkeletonCap().StartTracking(nId);
+
+            if (me_->userGen_.GetSkeletonCap().IsTracking(nId))
+            {
+                printf(" tracked! and put in the check list\n");
+////                struct NISkeletonUserDetected
+////                {
+////                    int nId;
+////                    bool toCheck;
+////                    int nbrOfDetection;
+////                    int frameChecked;
+////                    int toTrack;
+////                };                
+//                //    return;
+                
+                {
+                    boost::mutex::scoped_lock lock(me_->NISkeletonUserDetectedVecMutex_);
+        
+                    NISkeleton::NISkeletonUserDetected userDetected;
+    
+                    userDetected.nId = nId;
+                    userDetected.toCheck = 1;
+                    userDetected.nbrOfDetection = 0;
+                    userDetected.frameChecked = 0;
+                    userDetected.toTrack = 0;
+    
+                    me_->userDetectedVec_[nId] = userDetected;
+                }
+            }
+            else
+            {
+                printf("not tracked!\n");
+            }
+        }
+        else
+        {
+            std::cout<<"LoadCalibrationDataFromFile fail check the configuration in feature_1_5_2.ini or launch the init script"<<std::endl;
+            std::cout<<"other possible source of error:"<<std::endl;
+            std::cout<<"LoadCalibrationDataFromFile check if there is a calibration file at :"<<std::endl;
+            std::cout<<" "<<me_->sandbox_<<"UserCalibration.bin"<<std::endl;
+        }
+    }
+
+    // Callback: An existing user was lost
+    void SkeletonTrackerVSNI::User_LostUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie)
+    {
+        XnUInt32 epochTime = 0;
+        xnOSGetEpochTime(&epochTime);
+        printf("%d Lost user %d\n", epochTime, nId);
+     
+        {
+            boost::mutex::scoped_lock lock(me_->NISkeletonUserDetectedVecMutex_);
+            
+            int sizeVec = me_->userDetectedVec_.size(); 
+        }
+    }
+
+    bool checkFace();
 
     void SkeletonTrackerVSNI::loop_fct()
     {
@@ -206,31 +372,33 @@ namespace skeletonTrackerVSNI
 
                 //std::memcpy(TheInputImage.data,img_->raw_data, img_->width * img_->height);
                 {
-//  //                    std::memcpy(NiSkeletonMatImgMono_->imageData,imgXiMONO_->raw_data, imgXiMONO_->width * imgXiMONO_->height);
-//                      boost::mutex::scoped_lock lock(NISkeletonMatMonoMutex_);
-//                      std::memcpy(NISkeletonMatMono_.data,imgXiMONO_->raw_data, imgXiMONO_->width * imgXiMONO_->height);
-//                      cv::equalizeHist( NISkeletonMatMono_, NISkeletonMatMono_ );
-//  //                    imwrite( "/home/petit/test_mat_image.png", NISkeletonMatMono_ );
-//  //
-//  //                    std::vector<int> compression_params;
-//  //                    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-//  ////                    compression_params.push_back(CV_IMWRITE_PXM_BINARY);
-//  //                    compression_params.push_back(0);
-//  //
-//  //                    try 
-//  //                    {
-//  //                        imwrite("/home/petit/test_mat_image2.png", NISkeletonMatMono_, compression_params);
-//  //                    }
-//  //                    catch (runtime_error& ex) 
-//  //                    {
-//  //                        fprintf(stderr, "Exception converting image to PNG format: %s\n", ex.what());
-//  //                        //return 1;
-//  //                    }
-//  //
-//  //                    exit(1);
-//  //                    Mat NISkeletonMatMono(NiSkeletonMatImgMono_);
-//  
-//  //                    imgProc_.detectFace(imgXi_);
+//                    std::memcpy(NiSkeletonMatImgMono_->imageData,imgXiMONO_->raw_data, imgXiMONO_->width * imgXiMONO_->height);
+//                    boost::mutex::scoped_lock lock(NISkeletonMatMonoMutex_);
+                    std::memcpy(NISkeletonMatMono_.data,imgXiMONO_->raw_data, imgXiMONO_->width * imgXiMONO_->height);
+                    cv::equalizeHist( NISkeletonMatMono_, NISkeletonMatMono_ );
+//                    imwrite( "/home/petit/test_mat_image.png", NISkeletonMatMono_ );
+//
+//                    std::vector<int> compression_params;
+//                    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+////                    compression_params.push_back(CV_IMWRITE_PXM_BINARY);
+//                    compression_params.push_back(0);
+//
+//                    try 
+//                    {
+//                        imwrite("/home/petit/test_mat_image2.png", NISkeletonMatMono_, compression_params);
+//                    }
+//                    catch (runtime_error& ex) 
+//                    {
+//                        fprintf(stderr, "Exception converting image to PNG format: %s\n", ex.what());
+//                        //return 1;
+//                    }
+//
+//                    exit(1);
+//                    Mat NISkeletonMatMono(NiSkeletonMatImgMono_);
+
+//                    imgProc_.detectFace(imgXi_);
+                    faceDetection();
+
                 }
             }
 
@@ -242,9 +410,42 @@ namespace skeletonTrackerVSNI
 
     void SkeletonTrackerVSNI::calculs()
     {
+//          faceDetection();
+
+//        XnSkeletonJointPosition jointPos[2];
+//        XnPoint3D ptJointPos[2];
+//
+//        XnUserID aUsers[15];
+//        XnUInt16 nUsers = 15;
+//        userGen_.GetUsers(aUsers, nUsers);
+//
+//        std::vector<NISkeleton::NISkeletonUserJoints> skeletonDetected;
+//
+//        for (int iUserDetected = 0; iUserDetected < nUsers; ++iUserDetected)
+//        {
+//            userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_HEAD, jointPos[0]);
+//            userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_NECK, jointPos[1]);
+////            ptJointPos[iBodyPart] = jointPos[iBodyPart].position;
+//        }
+//        
+////        std::cout<<"jointPos[0] "<<(int)(jointPos[0])<<"jointPos[1]"<<(int)(jointPos[1])<<std::endl;
 
         finish_ = true;
 
+    }
+
+    void SkeletonTrackerVSNI::faceDetection()
+    {
+        NISkeletonFacesCascade_.detectMultiScale( NISkeletonMatMono_, NISkeletonFaces_, NISkeletonScaleFactorFace_, NISkeletonMinNeighborsFace_, NISkeletonFlagsFace_, NISkeletonMinSizeFace_ , NISkeletonMaxSizeFace_ );
+
+        {
+            boost::mutex::scoped_lock lock(NISkeletonFacesResultMutex_);
+            NISkeletonFacesResult_ = NISkeletonFaces_;
+        }
+
+        int facesNbr = NISkeletonFaces_.size();
+
+std::cout<<"NISkeletonFaces_"<<facesNbr<<std::endl;
     }
 
     void SkeletonTrackerVSNI::callback(visionsystem::Camera* cam, XEvent event)
@@ -262,18 +463,29 @@ namespace skeletonTrackerVSNI
 ////            imgProc_.FaceDetectProc_.GetEyesResult( eyesResult, eyesCenterResult );
 ////        }
 //
-//        for(int i = 0; i < facesResult.size(); i++)
-//        {
-//            glColor3f(1,0,0);
-//            glLineWidth(6.0);
-//            glBegin(GL_LINE_LOOP);
-//            glVertex2d(facesResult[i].x, facesResult[i].y);
-//            glVertex2d(facesResult[i].x + facesResult[i].width, facesResult[i].y);
-//            glVertex2d(facesResult[i].x + facesResult[i].width, facesResult[i].y + facesResult[i].height );
-//            glVertex2d(facesResult[i].x, facesResult[i].y + facesResult[i].height);
-//            glEnd();
-//         }
-//        //std::cout<<"facesResult.size()"<<facesResult.size()<< std::endl;
+        std::vector<cv::Rect> NISkeletonFacesResult;
+
+        {
+            boost::mutex::scoped_lock lock(NISkeletonFacesResultMutex_);
+            NISkeletonFacesResult = NISkeletonFacesResult_;
+        }
+
+
+        for(int i = 0; i < NISkeletonFacesResult.size(); i++)
+        {
+            if(NISkeletonFacesResult.size() != 0)
+            {
+                 glColor3f(1,0,0);
+                 glLineWidth(6.0);
+                 glBegin(GL_LINE_LOOP);
+                 glVertex2d(NISkeletonFacesResult[i].x, NISkeletonFacesResult[i].y);
+                 glVertex2d(NISkeletonFacesResult[i].x + NISkeletonFacesResult[i].width, NISkeletonFacesResult[i].y);
+                 glVertex2d(NISkeletonFacesResult[i].x + NISkeletonFacesResult[i].width, NISkeletonFacesResult[i].y + NISkeletonFacesResult[i].height );
+                 glVertex2d(NISkeletonFacesResult[i].x, NISkeletonFacesResult[i].y + NISkeletonFacesResult[i].height);
+                 glEnd();
+            }           
+         }
+        //std::cout<<"facesResult.size()"<<facesResult.size()<< std::endl;
     }
 
     bool SkeletonTrackerVSNI::post_fct()

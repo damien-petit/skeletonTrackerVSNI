@@ -4,6 +4,8 @@ ARCodeTheMarkerSize: 0.04
 ARCodeTheMarkersNbrMax: 4
 NISkeletonJointNbrMax_: 15
 coshellName_: "localhost"
+maxUserDetected_: 9
+
 
 #used in face detect
 

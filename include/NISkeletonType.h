@@ -5,7 +5,7 @@
 
 namespace NISkeleton
 {
-    struct NISkeleton3DPos
+    struct NISkeletonWorldPos
     {
         double x;
         double y;
@@ -20,8 +20,8 @@ namespace NISkeleton
 
     struct NISkeletonJoint
     {
-        Skeleton3DPos 3DPos;
-        SkeletonPixelPos PixelPos;
+        NISkeletonWorldPos worldPos;
+        NISkeletonPixelPos pixelPos;
         double confidencePos;
     };
 
@@ -44,6 +44,16 @@ namespace NISkeleton
         NISkeletonJoint rightFoot;
         NISkeletonJoint COM;
     };
+
+    struct NISkeletonUserDetected
+    {
+        int nId;
+        int toCheck;
+        int nbrOfDetection;
+        int frameChecked;
+        int toTrack;
+        NISkeletonUserJoints joints;
+    }; 
         
 //detected user
 

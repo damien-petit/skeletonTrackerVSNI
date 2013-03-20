@@ -24,7 +24,7 @@
 #include <XnCppWrapper.h>
 #include <XnPropNames.h>
 
-#include "NISkeletonProc.h"
+#include "NISkeletonType.h"
 
 #include <opencv2/opencv.hpp>
 
@@ -57,8 +57,19 @@ namespace skeletonTrackerVSNI
 
             bool GetObjectPositionNISkeleton(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
 
+            void initData();
+            void initUserGen();
+            void startUserGen();
+            void stopUserGen();
+            void faceDetection();
+
+//OpenNI callback
+            static void XN_CALLBACK_TYPE User_NewUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie);
+            static void XN_CALLBACK_TYPE User_LostUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie);
 
         private:
+
+            std::string sandbox_;
 
             vision::Image<uint32_t, vision::RGB> * imgXi_;
             vision::Image<uint8_t, vision::MONO> * imgXiMONO_;
@@ -85,11 +96,42 @@ namespace skeletonTrackerVSNI
             xn::Context* context_;
             xn::DepthGenerator* depth_;
             xn::DepthMetaData* depthMD_;
-
+            xn::UserGenerator userGen_;
+            XnCallbackHandle hUserCallbacks_;
 // end used by the openni skeleton tracker function
+
+//used to check is the user detected is real
+            
+            boost::mutex NISkeletonUserDetectedVecMutex_;
+            std::vector<NISkeleton::NISkeletonUserDetected> userDetectedVec_;
+            int maxUserDetected_;
 
             std::string coshellName_;
             coshell::CoshellClient * coshellVision_;
+
+//used for face detection
+            cv::Mat NISkeletonMatMono_;
+
+            double NISkeletonScaleFactorFace_;
+            int NISkeletonMinNeighborsFace_;
+            int NISkeletonFlagsFace_;
+            cv::Size NISkeletonMinSizeFace_;
+            cv::Size NISkeletonMaxSizeFace_;
+            std::string NISkeletonFacesCascadeName_;
+            int NISkeletonROIWidth_;
+            int NISkeletonROIHeight_;
+
+            std::vector<cv::Rect> NISkeletonFaces_;
+
+            boost::mutex NISkeletonFacesResultMutex_;
+            std::vector<cv::Rect> NISkeletonFacesResult_;
+
+            cv::CascadeClassifier NISkeletonFacesCascade_;
+
+            cv::RNG rng;
+
+//used for face detection
+
     };
 } // namespace skeletonTrackerVSNI
 
