@@ -298,6 +298,9 @@ namespace skeletonTrackerVSNI
         XnSkeletonJointPosition jointHeadPos;
         XnPoint3D ptHeadPos;
 
+        int posX = 0;
+        int posY = 0;
+
         XnStatus rc = me_->userGen_.GetSkeletonCap().LoadCalibrationDataFromFile(nId, userCalibrationFilenPath.str().c_str());
         if (rc == XN_STATUS_OK)
         {
@@ -309,10 +312,26 @@ namespace skeletonTrackerVSNI
             {
                 printf(" tracked! and put in the check deque\n");
                 me_->userGen_.GetSkeletonCap().GetSkeletonJointPosition(nId, XN_SKEL_HEAD, jointHeadPos);
+
+                if(jointHeadPos.fConfidence > 0.5)
+                {
+                    std::cout<<"confidence is good"<<std::endl;
+                }
+                else
+                {
+                    std::cout<<"confidence is bad"<<std::endl;
+                }
                 ptHeadPos = jointHeadPos.position;
+
+                posX = ptHeadPos.X;
+                posY = ptHeadPos.Y;
+
+                std::cout<<"before conversion to real world "<<"posX "<<posX<<"posY "<<posY<<std::endl;
                 me_->depth_->ConvertRealWorldToProjective(1, &ptHeadPos, &ptHeadPos);
-                int posX = ptHeadPos.X;
-                int posY = ptHeadPos.Y;
+
+                posX = ptHeadPos.X;
+                posY = ptHeadPos.Y;
+
                 if(me_->checkDeque( posX, posY))
                 {
                     std::cout<<"[from NewUser]check ok"<<std::endl;
