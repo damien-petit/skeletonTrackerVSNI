@@ -39,6 +39,8 @@ NISkeletonMinSizeYFace_: 60
 NISkeletonMaxSizeXFace_: 200
 NISkeletonMaxSizeYFace_: 200
 
+maxSizeDeque_: 5
+
 #faceCascadeName_: "haarcascade_fullbody.xml"
 NISkeletonheadMotionGain_ : 0.218
 NISkeletonxCenterMotionDeadZonePix_: 5

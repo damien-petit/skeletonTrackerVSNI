@@ -107,6 +107,14 @@ namespace skeletonTrackerVSNI
         dataToLoadOpenCV["NISkeletonROIWidth_"] >> NISkeletonROIWidth_;
         dataToLoadOpenCV["NISkeletonROIHeight_"] >> NISkeletonROIHeight_;
 
+        dataToLoadOpenCV["maxSizeDeque_"] >> maxSizeDeque_;
+        fullDeque_ = false;
+//RISK
+        if(maxSizeDeque_ < 1)
+        {
+            std::cout<<"[skeletonTrackerVSNI] problem maxSizeDeque_ value should be at least 1"<<std::endl;
+        }
+
         dataToLoadOpenCV.release();
 
         if( !NISkeletonFacesCascade_.load( sandbox_ + NISkeletonFacesCascadeName_ ) )
@@ -205,6 +213,8 @@ namespace skeletonTrackerVSNI
         whiteboard_write<SkeletonTrackerVSNI *>("plugin_skeletonTrackerVSNI", this);
 
         initUserGen();
+        userGenStarted_ = false;
+        trackChecked_ = false;
 
         return true ;
     }
@@ -285,6 +295,9 @@ namespace skeletonTrackerVSNI
         userCalibrationFilenPath << me_->sandbox_;
         userCalibrationFilenPath << nameUserCalibrationFile;
 
+        XnSkeletonJointPosition jointHeadPos;
+        XnPoint3D ptHeadPos;
+
         XnStatus rc = me_->userGen_.GetSkeletonCap().LoadCalibrationDataFromFile(nId, userCalibrationFilenPath.str().c_str());
         if (rc == XN_STATUS_OK)
         {
@@ -294,34 +307,29 @@ namespace skeletonTrackerVSNI
 
             if (me_->userGen_.GetSkeletonCap().IsTracking(nId))
             {
-                printf(" tracked! and put in the check list\n");
-////                struct NISkeletonUserDetected
-////                {
-////                    int nId;
-////                    bool toCheck;
-////                    int nbrOfDetection;
-////                    int frameChecked;
-////                    int toTrack;
-////                };                
-//                //    return;
-                
+                printf(" tracked! and put in the check deque\n");
+                me_->userGen_.GetSkeletonCap().GetSkeletonJointPosition(nId, XN_SKEL_HEAD, jointHeadPos);
+                ptHeadPos = jointHeadPos.position;
+                me_->depth_->ConvertRealWorldToProjective(1, &ptHeadPos, &ptHeadPos);
+                int posX = ptHeadPos.X;
+                int posY = ptHeadPos.Y;
+                if(me_->checkDeque( posX, posY))
                 {
-                    boost::mutex::scoped_lock lock(me_->NISkeletonUserDetectedVecMutex_);
-        
-                    NISkeleton::NISkeletonUserDetected userDetected;
-    
-                    userDetected.nId = nId;
-                    userDetected.toCheck = 1;
-                    userDetected.nbrOfDetection = 0;
-                    userDetected.frameChecked = 0;
-                    userDetected.toTrack = 0;
-    
-                    me_->userDetectedVec_[nId] = userDetected;
+                    std::cout<<"[from NewUser]check ok"<<std::endl;
+                    me_->trackChecked_ = true;
+                    std::cout<<"posX "<<posX<<" posY "<<posY<<std::endl;
+                //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
+                }
+                else
+                {
+                    std::cout<<"not checked"<<std::endl;
+                    me_->userGen_.GetSkeletonCap().StopTracking(nId);
                 }
             }
             else
             {
                 printf("not tracked!\n");
+                me_->userGen_.GetSkeletonCap().StopTracking(nId);
             }
         }
         else
@@ -342,7 +350,6 @@ namespace skeletonTrackerVSNI
      
         {
             boost::mutex::scoped_lock lock(me_->NISkeletonUserDetectedVecMutex_);
-            
             int sizeVec = me_->userDetectedVec_.size(); 
         }
     }
@@ -398,6 +405,11 @@ namespace skeletonTrackerVSNI
 
 //                    imgProc_.detectFace(imgXi_);
                     faceDetection();
+//                    bool check;
+//                    if(checkDeque(320,240))
+//                    {
+//                        std::cout<<"!!!!!!!!!!!!!!!!!!!1check OK"<<std::endl;
+//                    } 
 
                 }
             }
@@ -438,14 +450,119 @@ namespace skeletonTrackerVSNI
     {
         NISkeletonFacesCascade_.detectMultiScale( NISkeletonMatMono_, NISkeletonFaces_, NISkeletonScaleFactorFace_, NISkeletonMinNeighborsFace_, NISkeletonFlagsFace_, NISkeletonMinSizeFace_ , NISkeletonMaxSizeFace_ );
 
+        std::vector<cv::Rect> NISkeletonFaces;
+
+        NISkeletonFaces = NISkeletonFaces_;
+
         {
             boost::mutex::scoped_lock lock(NISkeletonFacesResultMutex_);
-            NISkeletonFacesResult_ = NISkeletonFaces_;
+            NISkeletonFacesResult_ = NISkeletonFaces;
+        }
+            //sizeHIstory_
+
+//        NISkeletonFacesResultDeque_.push_back(NISkeletonFaces_);
+
+        int dequeSize = NISkeletonFacesResultDeque_.size();
+        
+        if(dequeSize == maxSizeDeque_)
+        {
+            fullDeque_ = true;
         }
 
-        int facesNbr = NISkeletonFaces_.size();
+        if(fullDeque_)
+        {
+            if(!userGenStarted_)
+            {
+                startUserGen();
+                userGenStarted_ = true;  
+            }
+            else
+            {
+            }
+        }
+        else
+        {
 
-std::cout<<"NISkeletonFaces_"<<facesNbr<<std::endl;
+        }
+//        startUserGen(); 
+
+//        std::cout<<"NISkeletonFacesResultDeque_before"<<dequeSize<<std::endl;
+//        std::cout<<"maxSizeDeque_ "<<maxSizeDeque_<<std::endl;       
+        
+        {
+            boost::mutex::scoped_lock lock(NISkeletonFacesResultDequeMutex_);
+
+            if(dequeSize < maxSizeDeque_)
+            {
+                NISkeletonFacesResultDeque_.push_back(NISkeletonFaces);    
+            }
+            else
+            {
+                NISkeletonFacesResultDeque_.pop_front();            
+                NISkeletonFacesResultDeque_.push_back(NISkeletonFaces);
+            }
+        }
+    }
+
+    bool SkeletonTrackerVSNI::checkDeque(int xFacePos, int yFacePos)
+    {
+        std::deque<std::vector< cv::Rect> > NISkeletonFacesResultDeque;
+        std::vector< cv::Rect> NISkeletonFacesResult;
+        cv::Rect faceRect;
+
+        int leftXFace = 0;
+        int rightXFace = 0;
+
+        int topYFace = 0;
+        int bottomYFace = 0;
+
+        {
+            boost::mutex::scoped_lock lock(NISkeletonFacesResultDequeMutex_);        
+        
+            NISkeletonFacesResultDeque = NISkeletonFacesResultDeque_;
+        }
+        
+        int sizeDeque = NISkeletonFacesResultDeque.size();
+                    
+        int sizeFaceResult = 0;        
+        
+        std::cout<<"OpenNI result"<<std::endl;
+        std::cout<<"X "<< xFacePos<<" Y "<<yFacePos<<std::endl;
+
+        std::cout<<"OpenCV result"<<std::endl;
+
+        for(int i = 0; i < sizeDeque; i++) 
+        {
+            NISkeletonFacesResult = NISkeletonFacesResultDeque[i];
+        
+            sizeFaceResult = NISkeletonFacesResult.size();
+
+            for(int faceIter = 0; faceIter < sizeFaceResult; faceIter++)
+            {
+                faceRect = NISkeletonFacesResult[faceIter];
+            
+                leftXFace = faceRect.x;
+                rightXFace = faceRect.x + faceRect.width;
+
+                topYFace = faceRect.y;
+                bottomYFace = faceRect.y + faceRect.height;     
+
+                std::cout<<"leftXFace"<< leftXFace << std::endl;
+                std::cout<<"rightXFace"<< rightXFace << std::endl;
+                std::cout<<"topYFace"<< topYFace << std::endl;
+                std::cout<<"bottomYFace"<< bottomYFace << std::endl;
+
+                if(  leftXFace <= xFacePos && xFacePos <= rightXFace )
+                {
+                    if( topYFace <= yFacePos && yFacePos <= bottomYFace )
+                    {
+                        std::cout<<"[check function]check OK"<<std::endl;
+                        return 1;
+                    }
+                }
+            } 
+        } 
+        return 0;
     }
 
     void SkeletonTrackerVSNI::callback(visionsystem::Camera* cam, XEvent event)

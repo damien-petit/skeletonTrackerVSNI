@@ -1,6 +1,8 @@
 #ifndef SKELETON_TRACKER_VSNI
 #define SKELETON_TRACKER_VSNI
 
+#include <deque>
+
 #include <configparser/configparser.h>
 #include <vision/vision.h>
 #include <visionsystem/plugin.h>
@@ -67,6 +69,8 @@ namespace skeletonTrackerVSNI
             static void XN_CALLBACK_TYPE User_NewUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie);
             static void XN_CALLBACK_TYPE User_LostUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie);
 
+            bool checkDeque(int xFacePos, int yFacePos);
+
         private:
 
             std::string sandbox_;
@@ -97,10 +101,12 @@ namespace skeletonTrackerVSNI
             xn::DepthGenerator* depth_;
             xn::DepthMetaData* depthMD_;
             xn::UserGenerator userGen_;
+            bool userGenStarted_;
             XnCallbackHandle hUserCallbacks_;
+            bool trackChecked_;
 // end used by the openni skeleton tracker function
 
-//used to check is the user detected is real
+//used to check if the user detected is real
             
             boost::mutex NISkeletonUserDetectedVecMutex_;
             std::vector<NISkeleton::NISkeletonUserDetected> userDetectedVec_;
@@ -125,6 +131,11 @@ namespace skeletonTrackerVSNI
 
             boost::mutex NISkeletonFacesResultMutex_;
             std::vector<cv::Rect> NISkeletonFacesResult_;
+
+            int maxSizeDeque_;
+            std::deque< std::vector<cv::Rect> > NISkeletonFacesResultDeque_;
+            boost::mutex NISkeletonFacesResultDequeMutex_;
+            bool fullDeque_;
 
             cv::CascadeClassifier NISkeletonFacesCascade_;
 
