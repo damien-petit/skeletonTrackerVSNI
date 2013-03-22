@@ -99,6 +99,7 @@ namespace skeletonTrackerVSNI
 // used by the openni skeleton tracker function
             xn::Context* context_;
             xn::DepthGenerator* depth_;
+            xn::ImageGenerator* image_;
             xn::DepthMetaData* depthMD_;
             xn::UserGenerator userGen_;
             bool userGenStarted_;
@@ -136,6 +137,16 @@ namespace skeletonTrackerVSNI
             std::deque< std::vector<cv::Rect> > NISkeletonFacesResultDeque_;
             boost::mutex NISkeletonFacesResultDequeMutex_;
             bool fullDeque_;
+
+            struct COMResult
+            {
+                int nId;
+                int x;
+                int y;    
+            };
+
+            std::vector< COMResult > NISkeletonCOMResult_;
+            boost::mutex NISkeletonCOMResultMutex_;
 
             cv::CascadeClassifier NISkeletonFacesCascade_;
 
