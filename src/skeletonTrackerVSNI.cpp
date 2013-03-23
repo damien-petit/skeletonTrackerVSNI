@@ -235,6 +235,9 @@ namespace skeletonTrackerVSNI
         userGenStarted_ = false;
         trackChecked_ = false;
 
+        initHandsGen();
+
+         
         return true ;
     }
 
@@ -282,6 +285,38 @@ namespace skeletonTrackerVSNI
 
    } 
 
+    void SkeletonTrackerVSNI::initHandsGen()
+    {
+        XnStatus nRetVal = XN_STATUS_OK;
+
+        handsGen_.Create(*context_);
+
+        nRetVal = handsGen_.Create(*context_);
+
+        if(nRetVal != XN_STATUS_OK)
+        {
+             printf("Failed to create the hands generator \n");
+        }
+        else
+        {
+             printf("Succeed to create the hands generator \n");
+        }
+
+        nRetVal = handsGen_.RegisterHandCallbacks(Hand_Create, Hand_Update, Hand_Destroy, NULL, hHandCallbacks_);
+
+        if(nRetVal != XN_STATUS_OK)
+        {
+             printf("Failed to register the callbacks of the hands generator \n");
+        }
+        else
+        {
+             printf("Succeed to register the callbacks of the hands generator \n");
+        }
+
+        printf("hands generetor created and initialized but not started\n");
+
+   }
+
     void SkeletonTrackerVSNI::startUserGen()
     {
         userGen_.StartGenerating();
@@ -297,7 +332,28 @@ namespace skeletonTrackerVSNI
         }
     }
 
+
+    void SkeletonTrackerVSNI::startHandsGen()
+    {
+        handsGen_.StartGenerating();
+
+        XnBool checkGenerate = handsGen_.IsGenerating();
+        if(!checkGenerate)
+        {
+            std::cout<<"handsGenerator failed to start"<<std::endl;
+        }
+        else
+        {
+            std::cout<<"handsGenerator succeed to start"<<std::endl;
+        }
+    }
+
+
     void SkeletonTrackerVSNI::stopUserGen()
+    {
+    }
+
+    void SkeletonTrackerVSNI::stopHandsGen()
     {
     }
 
@@ -392,6 +448,22 @@ namespace skeletonTrackerVSNI
         }
     }
 
+    void SkeletonTrackerVSNI::Hand_Create(xn::HandsGenerator& generator, XnUserID nId, const XnPoint3D* pPosition, XnFloat fTime, void* pCookie)
+    {
+        printf("New Hand: %d @ (%f,%f,%f)\n", nId, pPosition->X, pPosition->Y, pPosition->Z);
+    }
+
+    void SkeletonTrackerVSNI::Hand_Update( xn::HandsGenerator& generator, XnUserID nId, const XnPoint3D* pPosition, XnFloat fTime, void* pCookie)
+    {
+        printf("Hand Moving: %d @ (%f,%f,%f)\n", nId, pPosition->X, pPosition->Y, pPosition->Z);
+    }
+
+    void SkeletonTrackerVSNI::Hand_Destroy(xn::HandsGenerator& generator, XnUserID nId, XnFloat fTime, void* pCookie)
+    {
+        printf("Lost Hand: %d\n", nId);
+        //g_GestureGenerator.AddGesture(GESTURE_TO_USE, NULL);
+    }
+
     void SkeletonTrackerVSNI::loop_fct()
     {
         vision::Image<uint32_t, vision::RGB> * imgXi = this->dequeue_image< vision::Image<uint32_t, vision::RGB> > (camXi_);
@@ -464,6 +536,9 @@ namespace skeletonTrackerVSNI
                         XnUserID aUsers[15];
                         XnUInt16 nUsers = 15;
 
+                        XnSkeletonJointPosition jointHandPos;
+                        XnPoint3D ptHandPos;
+
                         if(userGen_.IsGenerating())
                         {
 
@@ -517,6 +592,22 @@ namespace skeletonTrackerVSNI
 //                                    std::cout<<"confidence is bad"<<std::endl;
 //                                }
 
+//check is tracking 
+//                                if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected]))
+//                                {
+//                                    userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_HAND, jointHandPos);
+//                                    
+//                                    if(jointHandPos.fConfidence > 0.5)
+//                                    {
+//                                        ptHandPos = jointHandPos.position;
+//                                    
+//                                        handsGen_.StartTracking(ptHandPos);
+//                                    }
+//                                }
+//                                else
+//                                {
+//
+//                                }
 //use th COM of the user
 
                                 std::cout<<std::endl;
@@ -622,6 +713,8 @@ namespace skeletonTrackerVSNI
             {
                 startUserGen();
                 userGenStarted_ = true;  
+
+//                startHandsGen();
             }
             else
             {

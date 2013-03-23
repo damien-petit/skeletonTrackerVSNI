@@ -60,14 +60,25 @@ namespace skeletonTrackerVSNI
             bool GetObjectPositionNISkeleton(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
 
             void initData();
+
             void initUserGen();
             void startUserGen();
             void stopUserGen();
+            
+            void initHandsGen();
+            void startHandsGen();
+            void stopHandsGen();
+
             void faceDetection();
+
 
 //OpenNI callback
             static void XN_CALLBACK_TYPE User_NewUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie);
             static void XN_CALLBACK_TYPE User_LostUser(xn::UserGenerator& generator, XnUserID nId, void* pCookie);
+
+            static void XN_CALLBACK_TYPE Hand_Create(xn::HandsGenerator& generator, XnUserID nId, const XnPoint3D* pPosition, XnFloat fTime, void* pCookie);
+            static void XN_CALLBACK_TYPE Hand_Update(xn::HandsGenerator& generator, XnUserID nId, const XnPoint3D* pPosition, XnFloat fTime, void* pCookie);
+            static void XN_CALLBACK_TYPE Hand_Destroy(xn::HandsGenerator& generator, XnUserID nId, XnFloat fTime, void* pCookie);
 
             bool checkDeque(int xFacePos, int yFacePos);
 
@@ -102,9 +113,14 @@ namespace skeletonTrackerVSNI
             xn::ImageGenerator* image_;
             xn::DepthMetaData* depthMD_;
             xn::UserGenerator userGen_;
-            bool userGenStarted_;
             XnCallbackHandle hUserCallbacks_;
+            bool userGenStarted_;
             bool trackChecked_;
+
+            XnCallbackHandle hHandCallbacks_;
+            xn::HandsGenerator handsGen_;
+
+
 // end used by the openni skeleton tracker function
 
 //used to check if the user detected is real
