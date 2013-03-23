@@ -775,8 +775,6 @@ namespace skeletonTrackerVSNI
 
         for(int i = 0; i < sizeDeque; i++) 
         {
-
-
             NISkeletonFacesResult = NISkeletonFacesResultDeque[i];
         
             sizeFaceResult = NISkeletonFacesResult.size();
@@ -803,6 +801,8 @@ namespace skeletonTrackerVSNI
                 if(  leftXFace <= xFacePos && xFacePos <= rightXFace )
                 {
 //                    if( topYFace <= yFacePos && yFacePos <= bottomYFace )
+//adapted for COM
+                    if( yFacePos >= bottomYFace )
                     {
                         std::cout<<"[check function]check OK"<<std::endl;
                         return 1;
