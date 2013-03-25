@@ -120,7 +120,6 @@ namespace skeletonTrackerVSNI
             XnCallbackHandle hHandCallbacks_;
             xn::HandsGenerator handsGen_;
 
-
 // end used by the openni skeleton tracker function
 
 //used to check if the user detected is real
@@ -154,6 +153,13 @@ namespace skeletonTrackerVSNI
             boost::mutex NISkeletonFacesResultDequeMutex_;
             bool fullDeque_;
 
+            cv::CascadeClassifier NISkeletonFacesCascade_;
+
+            cv::RNG rng;
+
+//end used in face detection
+
+//used in COM detection
             struct COMResult
             {
                 int nId;
@@ -163,12 +169,18 @@ namespace skeletonTrackerVSNI
 
             std::vector< COMResult > NISkeletonCOMResult_;
             boost::mutex NISkeletonCOMResultMutex_;
+//end used in COM detection
 
-            cv::CascadeClassifier NISkeletonFacesCascade_;
+//used in result transmission by xmlrpc
+            int NISkeletonJointNbrMax_;
+            
+            cv::Mat NISkeletonRefToHeadTemp_;
 
-            cv::RNG rng;
+            std::vector<cv::Mat> NISkeletonposInTorsoTranslation_;
+            std::vector<cv::Mat> NISkeletonPosInCamTranslation_;
+//end used in result transmission by xmlrpc
 
-//used for face detection
+
 
     };
 } // namespace skeletonTrackerVSNI
