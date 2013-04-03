@@ -837,14 +837,7 @@ namespace skeletonTrackerVSNI
     void SkeletonTrackerVSNI::glfunc(visionsystem::Camera* cam)
     {
 //    //glDrawPixels( imgDispL_->width, imgDispL_->height, GL_RGBA, GL_UNSIGNED_BYTE, imgDispL_->raw_data );
-//        std::vector<cv::Rect> facesResult;
-////        {
-////            boost::mutex::scoped_lock lock(*FaceDetectResultMutexPtrVision_);
-//
-//            imgProc_.FaceDetectProc_.GetFacesResult( facesResult );
-////            imgProc_.FaceDetectProc_.GetEyesResult( eyesResult, eyesCenterResult );
-////        }
-//
+
         std::vector<cv::Rect> NISkeletonFacesResult;
         std::vector< COMResult > comResultVec;
 
@@ -857,8 +850,6 @@ namespace skeletonTrackerVSNI
             boost::mutex::scoped_lock lock(NISkeletonCOMResultMutex_);
             comResultVec = NISkeletonCOMResult_;
         }
-
-
 
         for(int i = 0; i < NISkeletonFacesResult.size(); i++)
         {

@@ -1,7 +1,7 @@
 ### CMake file for plugin_skeletonTrackerVSNI
 ###
 ###    From the off-tree build directory, invoke:
-###	 cmake <PATH_TO_vision_server>
+###  cmake <PATH_TO_vision_server>
 ###
 ###
 ###   - May 2012: Initial version
@@ -76,13 +76,14 @@ ENDIF(COSHELLCLIENT_FOUND)
 
 ### Set include directories 
 #specify the headers of the extern libraries that we want to use        
-include_directories( ${Boost_INCLUDE_DIRS}
-	                "${CMAKE_CURRENT_BINARY_DIR}"
-		            ${VISION_INCLUDE_DIRS} 
-		            ${VISIONSYSTEM_INCLUDE_DIRS} 
-                    "${VISIONSYSTEM_INCLUDE_DIRS}/vs_controllers/openni/"
-             	    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-                    )
+include_directories( 
+                        ${Boost_INCLUDE_DIRS}
+                        "${CMAKE_CURRENT_BINARY_DIR}"
+                        ${VISION_INCLUDE_DIRS} 
+                        ${VISIONSYSTEM_INCLUDE_DIRS} 
+                        "${VISIONSYSTEM_INCLUDE_DIRS}/vs_controllers/openni/"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+                   )
 
 include_directories(${OPENNI_INCLUDE_DIR})
 message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIR}, lib: ${OPENNI_LIBRARY})")
@@ -92,80 +93,49 @@ message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIR}, lib: ${OPENNI_LIBR
 file( GLOB openni_src "src/*.cpp" )
 file( GLOB openni_hdr "src/*.h*")
 
-#		     ${DL_INCLUDE_DIR} )
+#            ${DL_INCLUDE_DIR} )
 
 
 #specify the binary files of the extern libraries that we want to link to
-link_directories( "${VISIONSYSTEM_LIBRARY_DIRS}" "${VISION_LIBRARY_DIR}" ${INSTALL_LIB_PATH}/vs_plugins ${INSTALL_LIB_PATH}/vs_controllers "$ENV{HOME}/devel/lib" "${OPENNI_LIBRARY_DIR}")
+link_directories( 
+                    "${VISIONSYSTEM_LIBRARY_DIRS}" 
+                    "${VISION_LIBRARY_DIR}" 
+                    ${INSTALL_LIB_PATH}/vs_plugins 
+                    ${INSTALL_LIB_PATH}/vs_controllers 
+                    "$ENV{HOME}/devel/lib" 
+                    "${OPENNI_LIBRARY_DIR}"
+                )
 
 ### Go to subdirs
 
 SET( skeletonTrackerVSNI_lib_src 
-src/skeletonTrackerVSNI.cpp
-)
+    src/skeletonTrackerVSNI.cpp
+    )
 
 SET( skeletonTrackerVSNI_lib_hdr
-include/skeletonTrackerVSNI.h
-include/NISkeletonType.h
-)
+    include/skeletonTrackerVSNI.h
+    include/NISkeletonType.h
+    )
 
 #add library with option SHARED means compile the library dynamically
 add_library( "skeletonTrackerVSNI" SHARED ${skeletonTrackerVSNI_lib_src} ${skeletonTrackerVSNI_lib_hdr} )
 
 #link the extern libraries to the library that we want to compile
-target_link_libraries( "skeletonTrackerVSNI" ${VISIONSYSTEM_LIBRARIES}
-				     ${VISION_LIBRARIES} 
-				     ${OpenCV_LIBS} 
-                     ${COSHELLCLIENT_LIBS}
-                     GL configparser
-			 		 XmlRpc xmlrpc-server
-					 socket
-                     ${OPENNI_LIBRARY}
-#                     coshell-client
-		             )
-
-
-
-#SET( build_voc_src
-#src/main.cpp
-#)
-
-#add_executable( "build_voc" ${build_voc_src} )
-
-#target_link_libraries( "build_voc" recognition ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
-
-#SET( build_masks_src
-#src/build_masks.cpp
-#)
-
-#add_executable( "build_masks" ${build_masks_src} )
-
-#target_link_libraries( "build_masks" recognition ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} sfml-graphics sfml-window sfml-system )
-
-#SET( test_src
-#test/test.cpp
-#)
-
-#add_executable( "test_reco" ${test_src} )
-
-#target_link_libraries( "test_reco" recognition ${Boost_FILESYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} XmlRpc configparser xmlrpc-server)
+target_link_libraries( "skeletonTrackerVSNI" 
+                        ${VISIONSYSTEM_LIBRARIES}
+                        ${VISION_LIBRARIES} 
+                        ${OpenCV_LIBS} 
+                        ${COSHELLCLIENT_LIBS}
+                        GL 
+                        configparser
+                        XmlRpc 
+                        xmlrpc-server
+                        socket
+                        ${OPENNI_LIBRARY}
+                     )
 
 ### INSTAll
 
 install( TARGETS "skeletonTrackerVSNI" LIBRARY DESTINATION
      "${INSTALL_LIB_PATH}/vs_plugins"  COMPONENT main )
 
-#install( TARGETS "build_voc"
-#        RUNTIME DESTINATION bin COMPONENT main)
-
-#install( TARGETS "build_masks"
-#        RUNTIME DESTINATION bin COMPONENT main)
-
-#install( TARGETS "test_reco"
-#       RUNTIME DESTINATION ${CMAKE_BINARY_DIR}/test COMPONENT main)
-
-#install( FILES test/test.bin data/recognition.voc
-#        DESTINATION ${CMAKE_BINARY_DIR}/test COMPONENT main)
-
-#install( FILES ${skeletonTrackerVSNI_lib_hdr} 
-#         DESTINATION "${INSTALL_HEADERS_PATH}/skeletonTrackerVSNI/" COMPONENT main )
