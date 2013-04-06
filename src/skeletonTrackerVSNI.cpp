@@ -149,6 +149,8 @@ namespace skeletonTrackerVSNI
         coshellVision_->Initialize();
 
         NISkeletonMatMono_.create(480,640, CV_8UC1);
+
+//        nUsers_ = 15;
     }
 
     SkeletonTrackerVSNI::~SkeletonTrackerVSNI()
@@ -644,9 +646,9 @@ namespace skeletonTrackerVSNI
                                 comResultPerUser.y = posCoMY;
 
                                 {
-                                    NISkeletonCOMResult_[iUserDetected] = comResultPerUser;
-                               
                                     boost::mutex::scoped_lock lock(NISkeletonCOMResultMutex_);
+                               
+                                    NISkeletonCOMResult_[iUserDetected] = comResultPerUser;
                                 }
 
                                 if(checkDeque( posCoMX, posCoMY))
@@ -677,28 +679,7 @@ namespace skeletonTrackerVSNI
 
     void SkeletonTrackerVSNI::calculs()
     {
-//          faceDetection();
-
-//        XnSkeletonJointPosition jointPos[2];
-//        XnPoint3D ptJointPos[2];
-//
-//        XnUserID aUsers[15];
-//        XnUInt16 nUsers = 15;
-//        userGen_.GetUsers(aUsers, nUsers);
-//
-//        std::vector<NISkeleton::NISkeletonUserJoints> skeletonDetected;
-//
-//        for (int iUserDetected = 0; iUserDetected < nUsers; ++iUserDetected)
-//        {
-//            userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_HEAD, jointPos[0]);
-//            userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_NECK, jointPos[1]);
-////            ptJointPos[iBodyPart] = jointPos[iBodyPart].position;
-//        }
-//        
-////        std::cout<<"jointPos[0] "<<(int)(jointPos[0])<<"jointPos[1]"<<(int)(jointPos[1])<<std::endl;
-
         finish_ = true;
-
     }
 
     void SkeletonTrackerVSNI::faceDetection()
@@ -885,8 +866,6 @@ namespace skeletonTrackerVSNI
                 glEnd();
             } 
          }
-
-
         //std::cout<<"facesResult.size()"<<facesResult.size()<< std::endl;
     }
 
@@ -903,49 +882,15 @@ namespace skeletonTrackerVSNI
 //TODO selection de fonction dans params
 //TODO creation d un evenement par etat de visionFSM
 
-        //std::cout<<"[SkeletonTrackerVSNI] XmlRpc execute"<<std::endl;
-
-        //std::cout <<"[SkeletonTrackerVSNI]"<<" XmlRpcValue &  params "<<params[0]["MethodName"] << std::endl;
-
         std::string methodName(params[0]["MethodName"]);
-
-        //std::cout<<"[SkeletonTrackerVSNI] params[0][\"MethodName\"]"<<params[0]["MethodName"]<<std::endl;
-
-        if(methodName == "StateVisionFSM")
-        {
-//Select the state desired
-            std::string stateVisionFSM(params[0]["StateVisionFSM"]);
-
-//TODO tester si l'etat dans lequel on est different de l etat souhaite
-//TODO tester si on est dans l'etat StateCoice avent de changer d' etat dans lequel on est different de l etat souhaite ou faire comme l onfait actuellement et revenir automatiquement a StateChoice
-
-            if(stateVisionFSM == "StateARCode")
-            {
+//FIXME
 /*use an other thread for the process_event. If not the process_event will block this scope because of the while loop in the state of the state machine*/
 /*If this scope is block the execute method of xmplrpc will never return a value and so the xmlrpc server will be block and no other request from the client will be treated*/
-//                nextImgProcMethod_ = 1;
-            }
-            else if(stateVisionFSM == "StateImageProcessing1")
-            {
-//                nextImgProcMethod_ = 2;
-            }
-            else if(stateVisionFSM == "StateImageProcessing2")
-            {
-//                nextImgProcMethod_ = 3;
-            }
-            else if(stateVisionFSM == "StateNISkeleton")
-            {
-//                nextImgProcMethod_ = 4;
-            }
-        }
-        if(methodName == "GetObjectPositionARCode")
-        {
-//            GetObjectPositionARCode(params, result);
-        }
-        else if(methodName == "GetObjectPositionNISkeleton")
+        if(methodName == "GetObjectPositionNISkeleton")
         {
             std::cout<<"GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
             GetObjectPositionNISkeleton(params, result);
+            std::cout<<"end GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
         }
     }
 
@@ -953,75 +898,83 @@ namespace skeletonTrackerVSNI
     {
 
 // 15 joints + 1 COM 
+//float XnPoint3D
         XnPoint3D ptJointPosReal[16];
         XnPoint3D ptJointPosProjective[16];
         XnSkeletonJointPosition jointPos[15];
         XnSkeletonJointOrientation JointOr[15];
 
-        XnUserID aUsers[15];
+        XnUserID aUsers_[15];
         XnUInt16 nUsers = 15;
-        userGen_.GetUsers(aUsers, nUsers);
+        userGen_.GetUsers(aUsers_, nUsers);
 
         result["userDetectedNbr"] = (int)nUsers;
-
+        std::cout<<"nUsers "<<(int)nUsers<<std::endl;
         for (int iUserDetected = 0; iUserDetected < nUsers; ++iUserDetected)
         {
-            if (userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected]))
+            if (userGen_.GetSkeletonCap().IsTracking(aUsers_[iUserDetected]))
             {
 //get the translation of the joints
+                int isTrack = 1;
+                result["user"][iUserDetected]["isTrack"] = (int)isTrack;
 
-                result["user"][iUserDetected]["isTrack"] = 1;
+//                std::cout<<"test is track VSNI"<< (bool)result["user"][iUserDetected]["isTrack"]<<std::endl;
 
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_HEAD, jointPos[0]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_NECK, jointPos[1]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_HEAD, jointPos[0]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_NECK, jointPos[1]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_SHOULDER, jointPos[2]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_ELBOW, jointPos[3]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_HAND, jointPos[4]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_SHOULDER, jointPos[2]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_ELBOW, jointPos[3]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_HAND, jointPos[4]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_RIGHT_SHOULDER, jointPos[5]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_RIGHT_ELBOW, jointPos[6]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_RIGHT_HAND, jointPos[7]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_SHOULDER, jointPos[5]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_ELBOW, jointPos[6]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_HAND, jointPos[7]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_TORSO, jointPos[8]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_TORSO, jointPos[8]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_HIP, jointPos[9]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_KNEE, jointPos[10]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_FOOT, jointPos[11]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_HIP, jointPos[9]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_KNEE, jointPos[10]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_FOOT, jointPos[11]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_RIGHT_HIP, jointPos[12]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_RIGHT_KNEE, jointPos[13]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_RIGHT_FOOT, jointPos[14]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_HIP, jointPos[12]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_KNEE, jointPos[13]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_FOOT, jointPos[14]);
             }
             else
             {
-                result["user"][iUserDetected]["isTrack"] = 0;
+                int isTrack = 0;
+                result["user"][iUserDetected]["isTrack"] = (int)isTrack;
+                int test = 1;
+                test = (int)result["user"][iUserDetected]["isTrack"];
+                std::cout<<"not tracked and test"<< test<<std::endl;
+//                std::cout<<"test is track VSNI"<< (bool)result["user"][iUserDetected]["isTrack"]<<std::endl;
                 //we are only interested with the users tracked
                 continue;
             }
 //get  the orientation from the joints
 //          XnStatus    GetSkeletonJointOrientation (XnUserID user, XnSkeletonJoint eJoint, XnSkeletonJointOrientation &Joint) const 
 /*
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_HEAD, JointOr[0]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_NECK, JointOr[1]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_HEAD, JointOr[0]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_NECK, JointOr[1]);
 
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_LEFT_SHOULDER, JointOr[2]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_LEFT_ELBOW, JointOr[3]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_LEFT_HAND, JointOr[4]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_LEFT_SHOULDER, JointOr[2]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_LEFT_ELBOW, JointOr[3]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_LEFT_HAND, JointOr[4]);
 
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_RIGHT_SHOULDER, JointOr[5]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_RIGHT_ELBOW, JointOr[6]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_RIGHT_HAND, JointOr[7]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_RIGHT_SHOULDER, JointOr[5]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_RIGHT_ELBOW, JointOr[6]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_RIGHT_HAND, JointOr[7]);
 
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_TORSO, JointOr[8]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_TORSO, JointOr[8]);
 
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_LEFT_HIP, JointOr[9]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_LEFT_KNEE, JointOr[10]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_LEFT_FOOT, JointOr[11]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_LEFT_HIP, JointOr[9]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_LEFT_KNEE, JointOr[10]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_LEFT_FOOT, JointOr[11]);
 
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_RIGHT_HIP, JointOr[12]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_RIGHT_KNEE, JointOr[13]);
-            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers[iUserDetected], XN_SKEL_RIGHT_FOOT, JointOr[14]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_RIGHT_HIP, JointOr[12]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_RIGHT_KNEE, JointOr[13]);
+            userGen_.GetSkeletonCap().GetSkeletonJointOrientation(aUsers_[iUserDetected], XN_SKEL_RIGHT_FOOT, JointOr[14]);
 */
 
 //check the confidence of the measure for translation
@@ -1031,7 +984,7 @@ namespace skeletonTrackerVSNI
                 {
 //ptJointPosReal is usefull container because we can use the openNI function for the projection after            
                     ptJointPosReal[iBodyPart] = jointPos[iBodyPart].position;
-
+//ptJointPos return float
                     NISkeletonPosInCamTranslation_[iBodyPart].at<float>(0,0) =  ptJointPosReal[iBodyPart].X;
                     NISkeletonPosInCamTranslation_[iBodyPart].at<float>(1,0) =  ptJointPosReal[iBodyPart].Y;
                     NISkeletonPosInCamTranslation_[iBodyPart].at<float>(2,0) =  ptJointPosReal[iBodyPart].Z;
@@ -1046,7 +999,7 @@ namespace skeletonTrackerVSNI
                 } 
             }
 
-            userGen_.GetCoM(aUsers[iUserDetected], ptJointPosReal[15]);
+            userGen_.GetCoM(aUsers_[iUserDetected], ptJointPosReal[15]);
 
 //compute the joint detected in the waist position
 
@@ -1097,113 +1050,114 @@ namespace skeletonTrackerVSNI
 
 //RealWorld Position in torsoreference
 
-            result["user"][iUserDetected]["Head"]["T"][0] = NISkeletonposInTorsoTranslation_[0].at<float>(0,0);
-            result["user"][iUserDetected]["Head"]["T"][1] = NISkeletonposInTorsoTranslation_[0].at<float>(1,0);
-            result["user"][iUserDetected]["Head"]["T"][2] = NISkeletonposInTorsoTranslation_[0].at<float>(2,0);
+            result["user"][iUserDetected]["Head"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[0].at<float>(0,0);
+            result["user"][iUserDetected]["Head"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[0].at<float>(1,0);
+            result["user"][iUserDetected]["Head"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[0].at<float>(2,0);
 
-            result["user"][iUserDetected]["Neck"]["T"][0] = NISkeletonposInTorsoTranslation_[1].at<float>(0,0);
-            result["user"][iUserDetected]["Neck"]["T"][1] = NISkeletonposInTorsoTranslation_[1].at<float>(1,0);
-            result["user"][iUserDetected]["Neck"]["T"][2] = NISkeletonposInTorsoTranslation_[1].at<float>(2,0);
+            result["user"][iUserDetected]["Neck"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[1].at<float>(0,0);
+            result["user"][iUserDetected]["Neck"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[1].at<float>(1,0);
+            result["user"][iUserDetected]["Neck"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[1].at<float>(2,0);
 
-            result["user"][iUserDetected]["LeftShoulder"]["T"][0] = NISkeletonposInTorsoTranslation_[2].at<float>(0,0);
-            result["user"][iUserDetected]["LeftShoulder"]["T"][1] = NISkeletonposInTorsoTranslation_[2].at<float>(1,0);
-            result["user"][iUserDetected]["LeftShoulder"]["T"][2] = NISkeletonposInTorsoTranslation_[2].at<float>(2,0);
+            result["user"][iUserDetected]["LeftShoulder"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[2].at<float>(0,0);
+            result["user"][iUserDetected]["LeftShoulder"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[2].at<float>(1,0);
+            result["user"][iUserDetected]["LeftShoulder"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[2].at<float>(2,0);
 
-            result["user"][iUserDetected]["LeftElbow"]["T"][0] = NISkeletonposInTorsoTranslation_[3].at<float>(0,0);
-            result["user"][iUserDetected]["LeftElbow"]["T"][1] = NISkeletonposInTorsoTranslation_[3].at<float>(1,0);
-            result["user"][iUserDetected]["LeftElbow"]["T"][2] = NISkeletonposInTorsoTranslation_[3].at<float>(2,0);
+            result["user"][iUserDetected]["LeftElbow"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[3].at<float>(0,0);
+            result["user"][iUserDetected]["LeftElbow"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[3].at<float>(1,0);
+            result["user"][iUserDetected]["LeftElbow"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[3].at<float>(2,0);
 
-            result["user"][iUserDetected]["LeftHand"]["T"][0] = NISkeletonposInTorsoTranslation_[4].at<float>(0,0);
-            result["user"][iUserDetected]["LeftHand"]["T"][1] = NISkeletonposInTorsoTranslation_[4].at<float>(1,0);
-            result["user"][iUserDetected]["LeftHand"]["T"][2] = NISkeletonposInTorsoTranslation_[4].at<float>(2,0);
+            result["user"][iUserDetected]["LeftHand"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[4].at<float>(0,0);
+            result["user"][iUserDetected]["LeftHand"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[4].at<float>(1,0);
+            result["user"][iUserDetected]["LeftHand"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[4].at<float>(2,0);
 
-            result["user"][iUserDetected]["RightShoulder"]["T"][0] = NISkeletonposInTorsoTranslation_[5].at<float>(0,0);
-            result["user"][iUserDetected]["RightShoulder"]["T"][1] = NISkeletonposInTorsoTranslation_[5].at<float>(1,0);
-            result["user"][iUserDetected]["RightShoulder"]["T"][2] = NISkeletonposInTorsoTranslation_[5].at<float>(2,0);
+            result["user"][iUserDetected]["RightShoulder"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[5].at<float>(0,0);
+            result["user"][iUserDetected]["RightShoulder"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[5].at<float>(1,0);
+            result["user"][iUserDetected]["RightShoulder"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[5].at<float>(2,0);
 
-            result["user"][iUserDetected]["RightElbow"]["T"][0] = NISkeletonposInTorsoTranslation_[6].at<float>(0,0);
-            result["user"][iUserDetected]["RightElbow"]["T"][1] = NISkeletonposInTorsoTranslation_[6].at<float>(1,0);
-            result["user"][iUserDetected]["RightElbow"]["T"][2] = NISkeletonposInTorsoTranslation_[6].at<float>(2,0);
+            result["user"][iUserDetected]["RightElbow"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[6].at<float>(0,0);
+            result["user"][iUserDetected]["RightElbow"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[6].at<float>(1,0);
+            result["user"][iUserDetected]["RightElbow"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[6].at<float>(2,0);
 
-            result["user"][iUserDetected]["RightHand"]["T"][0] = NISkeletonposInTorsoTranslation_[7].at<float>(0,0);
-            result["user"][iUserDetected]["RightHand"]["T"][1] = NISkeletonposInTorsoTranslation_[7].at<float>(1,0);
-            result["user"][iUserDetected]["RightHand"]["T"][2] = NISkeletonposInTorsoTranslation_[7].at<float>(2,0);
+            result["user"][iUserDetected]["RightHand"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[7].at<float>(0,0);
+            result["user"][iUserDetected]["RightHand"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[7].at<float>(1,0);
+            result["user"][iUserDetected]["RightHand"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[7].at<float>(2,0);
 
-            result["user"][iUserDetected]["Torso"]["T"][0] = NISkeletonposInTorsoTranslation_[8].at<float>(0,0);
-            result["user"][iUserDetected]["Torso"]["T"][1] = NISkeletonposInTorsoTranslation_[8].at<float>(1,0);
-            result["user"][iUserDetected]["Torso"]["T"][2] = NISkeletonposInTorsoTranslation_[8].at<float>(2,0);
+            result["user"][iUserDetected]["Torso"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[8].at<float>(0,0);
+            result["user"][iUserDetected]["Torso"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[8].at<float>(1,0);
+            result["user"][iUserDetected]["Torso"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[8].at<float>(2,0);
 
-            result["user"][iUserDetected]["LeftHip"]["T"][0] = NISkeletonposInTorsoTranslation_[9].at<float>(0,0);
-            result["user"][iUserDetected]["LeftHip"]["T"][1] = NISkeletonposInTorsoTranslation_[9].at<float>(1,0);
-            result["user"][iUserDetected]["LeftHip"]["T"][2] = NISkeletonposInTorsoTranslation_[9].at<float>(2,0);
+            result["user"][iUserDetected]["LeftHip"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[9].at<float>(0,0);
+            result["user"][iUserDetected]["LeftHip"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[9].at<float>(1,0);
+            result["user"][iUserDetected]["LeftHip"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[9].at<float>(2,0);
 
-            result["user"][iUserDetected]["LeftKnee"]["T"][0] = NISkeletonposInTorsoTranslation_[10].at<float>(0,0);
-            result["user"][iUserDetected]["LeftKnee"]["T"][1] = NISkeletonposInTorsoTranslation_[10].at<float>(1,0);
-            result["user"][iUserDetected]["LeftKnee"]["T"][2] = NISkeletonposInTorsoTranslation_[10].at<float>(2,0);
+            result["user"][iUserDetected]["LeftKnee"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[10].at<float>(0,0);
+            result["user"][iUserDetected]["LeftKnee"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[10].at<float>(1,0);
+            result["user"][iUserDetected]["LeftKnee"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[10].at<float>(2,0);
 
-            result["user"][iUserDetected]["LeftFoot"]["T"][0] = NISkeletonposInTorsoTranslation_[11].at<float>(0,0);
-            result["user"][iUserDetected]["LeftFoot"]["T"][1] = NISkeletonposInTorsoTranslation_[11].at<float>(1,0);
-            result["user"][iUserDetected]["LeftFoot"]["T"][2] = NISkeletonposInTorsoTranslation_[11].at<float>(2,0);
+            result["user"][iUserDetected]["LeftFoot"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[11].at<float>(0,0);
+            result["user"][iUserDetected]["LeftFoot"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[11].at<float>(1,0);
+            result["user"][iUserDetected]["LeftFoot"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[11].at<float>(2,0);
 
 
-            result["user"][iUserDetected]["RightHip"]["T"][0] = NISkeletonposInTorsoTranslation_[12].at<float>(0,0);
-            result["user"][iUserDetected]["RightHip"]["T"][1] = NISkeletonposInTorsoTranslation_[12].at<float>(1,0);
-            result["user"][iUserDetected]["RightHip"]["T"][2] = NISkeletonposInTorsoTranslation_[12].at<float>(2,0);
+            result["user"][iUserDetected]["RightHip"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[12].at<float>(0,0);
+            result["user"][iUserDetected]["RightHip"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[12].at<float>(1,0);
+            result["user"][iUserDetected]["RightHip"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[12].at<float>(2,0);
 
-            result["user"][iUserDetected]["RightKnee"]["T"][0] = NISkeletonposInTorsoTranslation_[13].at<float>(0,0);
-            result["user"][iUserDetected]["RightKnee"]["T"][1] = NISkeletonposInTorsoTranslation_[13].at<float>(1,0);
-            result["user"][iUserDetected]["RightKnee"]["T"][2] = NISkeletonposInTorsoTranslation_[13].at<float>(2,0);
+            result["user"][iUserDetected]["RightKnee"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[13].at<float>(0,0);
+            result["user"][iUserDetected]["RightKnee"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[13].at<float>(1,0);
+            result["user"][iUserDetected]["RightKnee"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[13].at<float>(2,0);
 
-            result["user"][iUserDetected]["RightFoot"]["T"][0] = NISkeletonposInTorsoTranslation_[14].at<float>(0,0);
-            result["user"][iUserDetected]["RightFoot"]["T"][1] = NISkeletonposInTorsoTranslation_[14].at<float>(1,0);
-            result["user"][iUserDetected]["RightFoot"]["T"][2] = NISkeletonposInTorsoTranslation_[14].at<float>(2,0);
+            result["user"][iUserDetected]["RightFoot"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[14].at<float>(0,0);
+            result["user"][iUserDetected]["RightFoot"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[14].at<float>(1,0);
+            result["user"][iUserDetected]["RightFoot"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[14].at<float>(2,0);
 
-            result["user"][iUserDetected]["COM"]["T"][0] = NISkeletonposInTorsoTranslation_[15].at<float>(0,0);
-            result["user"][iUserDetected]["COM"]["T"][1] = NISkeletonposInTorsoTranslation_[15].at<float>(1,0);
-            result["user"][iUserDetected]["COM"]["T"][2] = NISkeletonposInTorsoTranslation_[15].at<float>(2,0);
+            result["user"][iUserDetected]["COM"]["T"][0] = (double)NISkeletonposInTorsoTranslation_[15].at<float>(0,0);
+            result["user"][iUserDetected]["COM"]["T"][1] = (double)NISkeletonposInTorsoTranslation_[15].at<float>(1,0);
+            result["user"][iUserDetected]["COM"]["T"][2] = (double)NISkeletonposInTorsoTranslation_[15].at<float>(2,0);
 
             depth_->ConvertRealWorldToProjective(16, ptJointPosReal, ptJointPosProjective);
 
 //Pixel Position
 
-            result["user"][iUserDetected]["Head"]["CenterX"] = ptJointPosProjective[0].X;
-            result["user"][iUserDetected]["Head"]["CenterY"] = ptJointPosProjective[0].Y;
+            result["user"][iUserDetected]["Head"]["CenterX"] = (int)ptJointPosProjective[0].X;
+            result["user"][iUserDetected]["Head"]["CenterY"] = (int)ptJointPosProjective[0].Y;
 
-            result["user"][iUserDetected]["Neck"]["CenterX"] = ptJointPosProjective[1].X;
-            result["user"][iUserDetected]["Neck"]["CenterY"] = ptJointPosProjective[1].Y;
+            result["user"][iUserDetected]["Neck"]["CenterX"] = (int)ptJointPosProjective[1].X;
+            result["user"][iUserDetected]["Neck"]["CenterY"] = (int)ptJointPosProjective[1].Y;
 
-            result["user"][iUserDetected]["LeftShoulder"]["CenterX"] = ptJointPosProjective[2].X;
-            result["user"][iUserDetected]["LeftShoulder"]["CenterY"] = ptJointPosProjective[2].Y;
-            result["user"][iUserDetected]["LeftElbow"]["CenterX"] = ptJointPosProjective[3].X;
-            result["user"][iUserDetected]["LeftElbow"]["CenterY"] = ptJointPosProjective[3].Y;
-            result["user"][iUserDetected]["LeftHand"]["CenterX"] = ptJointPosProjective[4].X;
-            result["user"][iUserDetected]["LeftHand"]["CenterY"] = ptJointPosProjective[4].Y;
+            result["user"][iUserDetected]["LeftShoulder"]["CenterX"] = (int)ptJointPosProjective[2].X;
+            result["user"][iUserDetected]["LeftShoulder"]["CenterY"] = (int)ptJointPosProjective[2].Y;
+            result["user"][iUserDetected]["LeftElbow"]["CenterX"] = (int)ptJointPosProjective[3].X;
+            result["user"][iUserDetected]["LeftElbow"]["CenterY"] = (int)ptJointPosProjective[3].Y;
+            result["user"][iUserDetected]["LeftHand"]["CenterX"] = (int)ptJointPosProjective[4].X;
+            result["user"][iUserDetected]["LeftHand"]["CenterY"] = (int)ptJointPosProjective[4].Y;
 
-            result["user"][iUserDetected]["RightShoulder"]["CenterX"] = ptJointPosProjective[5].X;
-            result["user"][iUserDetected]["RightShoulder"]["CenterY"] = ptJointPosProjective[5].Y;
-            result["user"][iUserDetected]["RightElbow"]["CenterX"] = ptJointPosProjective[6].X;
-            result["user"][iUserDetected]["RightElbow"]["CenterY"] = ptJointPosProjective[6].Y;
-            result["user"][iUserDetected]["RightHand"]["CenterX"] = ptJointPosProjective[7].X;
-            result["user"][iUserDetected]["RightHand"]["CenterY"] = ptJointPosProjective[7].Y;
+            result["user"][iUserDetected]["RightShoulder"]["CenterX"] = (int)ptJointPosProjective[5].X;
+            result["user"][iUserDetected]["RightShoulder"]["CenterY"] = (int)ptJointPosProjective[5].Y;
+            result["user"][iUserDetected]["RightElbow"]["CenterX"] = (int)ptJointPosProjective[6].X;
+            result["user"][iUserDetected]["RightElbow"]["CenterY"] = (int)ptJointPosProjective[6].Y;
+            result["user"][iUserDetected]["RightHand"]["CenterX"] = (int)ptJointPosProjective[7].X;
+            result["user"][iUserDetected]["RightHand"]["CenterY"] = (int)ptJointPosProjective[7].Y;
 
-            result["user"][iUserDetected]["Torso"]["CenterX"] = ptJointPosProjective[8].X;
-            result["user"][iUserDetected]["Torso"]["CenterY"] = ptJointPosProjective[8].Y;
+            result["user"][iUserDetected]["Torso"]["CenterX"] = (int)ptJointPosProjective[8].X;
+            result["user"][iUserDetected]["Torso"]["CenterY"] = (int)ptJointPosProjective[8].Y;
 
-            result["user"][iUserDetected]["LeftHip"]["CenterX"] = ptJointPosProjective[9].X;
-            result["user"][iUserDetected]["LeftHip"]["CenterY"] = ptJointPosProjective[9].Y;
-            result["user"][iUserDetected]["LeftKnee"]["CenterX"] = ptJointPosProjective[10].X;
-            result["user"][iUserDetected]["LeftKnee"]["CenterY"] = ptJointPosProjective[10].Y;
-            result["user"][iUserDetected]["LeftFoot"]["CenterX"] = ptJointPosProjective[11].X;
-            result["user"][iUserDetected]["LeftFoot"]["CenterY"] = ptJointPosProjective[11].Y;
+            result["user"][iUserDetected]["LeftHip"]["CenterX"] = (int)ptJointPosProjective[9].X;
+            result["user"][iUserDetected]["LeftHip"]["CenterY"] = (int)ptJointPosProjective[9].Y;
+            result["user"][iUserDetected]["LeftKnee"]["CenterX"] = (int)ptJointPosProjective[10].X;
+            result["user"][iUserDetected]["LeftKnee"]["CenterY"] = (int)ptJointPosProjective[10].Y;
+            result["user"][iUserDetected]["LeftFoot"]["CenterX"] = (int)ptJointPosProjective[11].X;
+            result["user"][iUserDetected]["LeftFoot"]["CenterY"] = (int)ptJointPosProjective[11].Y;
 
-            result["user"][iUserDetected]["RightHip"]["CenterX"] = ptJointPosProjective[12].X;
-            result["user"][iUserDetected]["RightHip"]["CenterY"] = ptJointPosProjective[12].Y;
-            result["user"][iUserDetected]["RightKnee"]["CenterX"] = ptJointPosProjective[13].X;
-            result["user"][iUserDetected]["RightKnee"]["CenterY"] = ptJointPosProjective[13].Y;
-            result["user"][iUserDetected]["RightFoot"]["CenterX"] = ptJointPosProjective[14].X;
-            result["user"][iUserDetected]["RightFoot"]["CenterY"] = ptJointPosProjective[14].Y;
+            result["user"][iUserDetected]["RightHip"]["CenterX"] = (int)ptJointPosProjective[12].X;
+            result["user"][iUserDetected]["RightHip"]["CenterY"] = (int)ptJointPosProjective[12].Y;
+            result["user"][iUserDetected]["RightKnee"]["CenterX"] = (int)ptJointPosProjective[13].X;
+            result["user"][iUserDetected]["RightKnee"]["CenterY"] = (int)ptJointPosProjective[13].Y;
+            result["user"][iUserDetected]["RightFoot"]["CenterX"] = (int)ptJointPosProjective[14].X;
+            result["user"][iUserDetected]["RightFoot"]["CenterY"] = (int)ptJointPosProjective[14].Y;
 
-            result["user"][iUserDetected]["COM"]["CenterX"] = ptJointPosProjective[15].X;
+            result["user"][iUserDetected]["COM"]["CenterX"] = (int)ptJointPosProjective[15].X;
+            result["user"][iUserDetected]["COM"]["CenterY"] = (int)ptJointPosProjective[15].Y;
 
 //TODO hard copy of the data if we want to speed up the process we van write directly in *result because the pointer has been allocated  in bci-self-interact
           }

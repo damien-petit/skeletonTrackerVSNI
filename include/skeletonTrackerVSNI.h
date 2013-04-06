@@ -82,6 +82,7 @@ namespace skeletonTrackerVSNI
 
             bool checkDeque(int xFacePos, int yFacePos);
 
+            bool updateSkeletonData();
         private:
 
             std::string sandbox_;
@@ -171,6 +172,19 @@ namespace skeletonTrackerVSNI
             boost::mutex NISkeletonCOMResultMutex_;
 //end used in COM detection
 
+//used in updateSkeletonData
+// 15 joints + 1 COM
+//float XnPoint3D 
+//            XnPoint3D ptJointPosReal_[16];
+//            XnPoint3D ptJointPosProjective_[16];
+//            XnSkeletonJointPosition jointPos_[15];
+//            XnSkeletonJointOrientation JointOr_[15];
+
+//            XnUserID aUsers_[15];
+//            XnUInt16 nUsers_;
+
+//end used in updateSkeletonData
+
 //used in result transmission by xmlrpc
             int NISkeletonJointNbrMax_;
             
@@ -178,10 +192,9 @@ namespace skeletonTrackerVSNI
 
             std::vector<cv::Mat> NISkeletonposInTorsoTranslation_;
             std::vector<cv::Mat> NISkeletonPosInCamTranslation_;
+
+            std::vector<NISkeleton::NISkeletonUserJoints> skeletonUserJointsVec_;           
 //end used in result transmission by xmlrpc
-
-
-
     };
 } // namespace skeletonTrackerVSNI
 

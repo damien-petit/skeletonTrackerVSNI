@@ -54,6 +54,7 @@ find_library(OPENNI_LIBRARY
              PATHS "$ENV{PROGRAMFILES}/OpenNI/Lib${OPENNI_SUFFIX}" "$ENV{PROGRAMW6432}/OpenNI/Lib${OPENNI_SUFFIX}"
              PATH_SUFFIXES lib
             )
+### End find OpenNI
 
 # Load Pkgconfig macros
 INCLUDE(FindPkgConfig)
