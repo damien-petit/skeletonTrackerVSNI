@@ -14,8 +14,8 @@ namespace NISkeleton
 
     struct NISkeletonPixelPos
     {   
-        double x;
-        double y;
+        int x;
+        int y;
     };
 
     struct NISkeletonJoint
