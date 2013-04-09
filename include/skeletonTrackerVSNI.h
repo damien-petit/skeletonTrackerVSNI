@@ -58,6 +58,7 @@ namespace skeletonTrackerVSNI
             void execute(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
 
             bool GetObjectPositionNISkeleton(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
+            bool GetObjectPositionNISkeleton2(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
 
             void initData();
 
@@ -82,7 +83,7 @@ namespace skeletonTrackerVSNI
 
             bool checkDeque(int xFacePos, int yFacePos);
 
-//            bool updateSkeletonData();
+            bool updateSkeletonData();
         private:
 
             std::string sandbox_;
@@ -182,8 +183,8 @@ namespace skeletonTrackerVSNI
 
 //            XnUserID aUsers_[15];
 //            XnUInt16 nUsers_;
-            std::vector<NISkeleton::NISkeletonUserDetected> skeletonUserJointsVec_;           
-            boost::mutex NISkeletonUserJointsMutex_;
+            std::vector<NISkeleton::NISkeletonUserDetected> skeletonUserDetectedVec_;           
+            boost::mutex NISkeletonUserDetectedMutex_;
 
 //end used in updateSkeletonData
 
