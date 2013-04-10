@@ -402,50 +402,6 @@ namespace skeletonTrackerVSNI
         {
 //            // Make sure state is coherent
             me_->userGen_.GetPoseDetectionCap().StopPoseDetection(nId);
-//            me_->userGen_.GetSkeletonCap().StartTracking(nId);
-//
-//            if (me_->userGen_.GetSkeletonCap().IsTracking(nId))
-//            {
-//                printf(" tracked! and put in the check deque\n");
-//                me_->userGen_.GetSkeletonCap().GetSkeletonJointPosition(nId, XN_SKEL_HEAD, jointHeadPos);
-//
-//                if(jointHeadPos.fConfidence > 0.5)
-//                {
-//                    std::cout<<"confidence is good"<<std::endl;
-//                }
-//                else
-//                {
-//                    std::cout<<"confidence is bad"<<std::endl;
-//                }
-//                ptHeadPos = jointHeadPos.position;
-//
-//                posX = ptHeadPos.X;
-//                posY = ptHeadPos.Y;
-//
-//                std::cout<<"before conversion to real world "<<"posX "<<posX<<"posY "<<posY<<std::endl;
-//                me_->depth_->ConvertRealWorldToProjective(1, &ptHeadPos, &ptHeadPos);
-//
-//                posX = ptHeadPos.X;
-//                posY = ptHeadPos.Y;
-//
-//                if(me_->checkDeque( posX, posY))
-//                {
-//                    std::cout<<"[from NewUser]check ok"<<std::endl;
-//                    me_->trackChecked_ = true;
-//                    std::cout<<"posX "<<posX<<" posY "<<posY<<std::endl;
-//                //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
-//                }
-//                else
-//                {
-//                    std::cout<<"not checked"<<std::endl;
-//                    me_->userGen_.GetSkeletonCap().StopTracking(nId);
-//                }
-//            }
-//            else
-//            {
-//                printf("not tracked!\n");
-//                me_->userGen_.GetSkeletonCap().StopTracking(nId);
-//            }
         }
         else
         {
@@ -571,66 +527,7 @@ namespace skeletonTrackerVSNI
 //
                             for (int iUserDetected = 0; iUserDetected < nUsers; ++iUserDetected)
                             {
-//user already tracked
-//                                printf(" check deque\n");
-//                                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_HEAD, jointHeadPos);
-//
-//                                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_HEAD, jointHeadPos);
-//                
-//                                if(jointHeadPos.fConfidence > 0.5)
-//                                {
-//                                    std::cout<<"confidence is good"<<std::endl;
-// 
-//                                    ptHeadPos = jointHeadPos.position;
-//     
-//                                    posX = ptHeadPos.X;
-//                                    posY = ptHeadPos.Y;
-//     
-//                                    std::cout<<"before conversion to real world "<<"posX "<<posX<<"posY "<<posY<<std::endl;
-//                                    depth_->ConvertRealWorldToProjective(1, &ptHeadPos, &ptHeadPos);
-//     
-//                                    posX = ptHeadPos.X;
-//                                    posY = ptHeadPos.Y;
-//     
-//                                    if(checkDeque( posX, posY))
-//                                    {
-//                                        std::cout<<"[from NewUser]check ok"<<std::endl;
-//                                        me_->trackChecked_ = true;
-//                                        std::cout<<"posX "<<posX<<" posY "<<posY<<std::endl;
-//                                    //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
-//
-//                                        userGen_.GetSkeletonCap().StartTracking(aUsers[iUserDetected]);
-//                                    }
-//                                    else
-//                                    {
-//                                        std::cout<<"not checked"<<std::endl;
-//    //                                    me_->userGen_.GetSkeletonCap().StopTracking(aUsers[iUserDetected]);
-//                                    }
-//    
-//                                }
-//                                else
-//                                {
-//                                    std::cout<<"confidence is bad"<<std::endl;
-//                                }
-
-//check is tracking 
-//                                if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected]))
-//                                {
-//                                    userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_HAND, jointHandPos);
-//                                    
-//                                    if(jointHandPos.fConfidence > 0.5)
-//                                    {
-//                                        ptHandPos = jointHandPos.position;
-//                                    
-//                                        handsGen_.StartTracking(ptHandPos);
-//                                    }
-//                                }
-//                                else
-//                                {
-//
-//                                }
 //use th COM of the user
-
                                 std::cout<<std::endl;
                                 std::cout<<"userNumber "<<iUserDetected<<std::endl;
 
