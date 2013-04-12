@@ -1116,6 +1116,9 @@ namespace skeletonTrackerVSNI
 //check the confidence of the measure for translation
             for(int iBodyPart = 0; iBodyPart < 15; iBodyPart++)
             {
+
+                result["pos"][iUserDetected][iBodyPart]["C"] = (double)jointPos[iBodyPart].fConfidence;
+
                 if (jointPos[iBodyPart].fConfidence > 0.5)
                 {
 //ptJointPosReal is usefull container because we can use the openNI function for the projection after            
@@ -1128,6 +1131,7 @@ namespace skeletonTrackerVSNI
 //a examiner le calcul effectuei
 //regader la doc file:///home/petit/Downloads/OpenNI-Bin-ev-Linux-x86-v1.5.4.0/Documentation/html/conc_coord.html
 //converti les donnees en pixel pour x et y z est tou jours en millimetre les origin en x et y son change du centre de fov a upper-left corner of the FOV
+
 
 
                 }
