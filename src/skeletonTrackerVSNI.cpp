@@ -1105,7 +1105,7 @@ namespace skeletonTrackerVSNI
 //get the translation of the joints
                 int isTrack = 1;
                 result["user"][iUserDetected]["isTrack"] = (int)isTrack;
-
+                result["user"][iUserDetected]["nId"] = (int)(aUsers_[iUserDetected]) ;
 //                std::cout<<"test is track VSNI"<< (bool)result["user"][iUserDetected]["isTrack"]<<std::endl;
 
                 userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_HEAD, jointPos[0]);
@@ -1133,6 +1133,7 @@ namespace skeletonTrackerVSNI
             {
                 int isTrack = 0;
                 result["user"][iUserDetected]["isTrack"] = (int)isTrack;
+                result["user"][iUserDetected]["nId"] = (int)(aUsers_[iUserDetected]);
                 int test = 1;
                 test = (int)result["user"][iUserDetected]["isTrack"];
                 std::cout<<"not tracked and test"<< test<<std::endl;
@@ -1145,7 +1146,6 @@ namespace skeletonTrackerVSNI
 //check the confidence of the measure for translation
             for(int iBodyPart = 0; iBodyPart < 15; iBodyPart++)
             {
-
                 result["pos"][iUserDetected][iBodyPart]["C"] = (double)jointPos[iBodyPart].fConfidence;
 
                 if (jointPos[iBodyPart].fConfidence > 0.5)
@@ -1160,9 +1160,6 @@ namespace skeletonTrackerVSNI
 //a examiner le calcul effectuei
 //regader la doc file:///home/petit/Downloads/OpenNI-Bin-ev-Linux-x86-v1.5.4.0/Documentation/html/conc_coord.html
 //converti les donnees en pixel pour x et y z est tou jours en millimetre les origin en x et y son change du centre de fov a upper-left corner of the FOV
-
-
-
                 }
                 else
                 {
