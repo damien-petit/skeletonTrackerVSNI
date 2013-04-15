@@ -237,31 +237,33 @@ namespace skeletonTrackerVSNI
         XnStatus rc = depth_->GetAlternativeViewPointCap().SetViewPoint(*image_); 
         XnInt32 nMin;
         XnInt32 nMax;
-        XnInt32 nStep;
+//        XnInt32 nStep;
+        int nStep;
         XnInt32 nDefault;
         XnBool autoSupported;
 
 
-        if(image_->IsCapabilitySupported(XN_CAPABILITY_LOW_LIGHT_COMPENSATION))
-        {
-            printf("Supplied image generator doesn't support LOW_LIGHT_COMPENSATION\n");
-            //return 1;
-        }
-        else
-        {
-            printf("Supplied image generator support LOW_LIGHT_COMPENSATION\n");
-        }
-
-for(int iCamIter = 0; iCamIter < 10; iCamIter++)
-{
-        image_->GetLowLightCompensationCap().GetRange(nMin, nMax, nStep, nDefault, autoSupported);
-
-        std::cout<<"nMin "<<(int)nMin<<" nMax "<<(int)nMax<<" nStep "<< (int)nStep <<" nDefault "<<(int)nDefault<<" autoSupported "<<(bool)autoSupported<<std::endl;
-
-sleep(1);
-} 
-
-        exit(-1);
+////        if(image_->IsCapabilitySupported(XN_CAPABILITY_LOW_LIGHT_COMPENSATION))
+//        if(image_->IsCapabilitySupported(XN_CAPABILITY_HUE))
+//        {
+//            printf("Supplied image generator support LOW_LIGHT_COMPENSATION\n");
+//            //return 1;
+//        }
+//        else
+//        {
+//            printf("Supplied image generator doesn't support LOW_LIGHT_COMPENSATION\n");
+//        }
+//
+////for(int iCamIter = 0; iCamIter < 10; iCamIter++)
+////{
+////        image_->GetLowLightCompensationCap().GetRange(nMin, nMax, nStep, nDefault, autoSupported);
+////
+////        std::cout<<"nMin "<<(int)nMin<<" nMax "<<(int)nMax<<" nStep "<< (int)nStep <<" nDefault "<<(int)nDefault<<" autoSupported "<<(bool)autoSupported<<std::endl;
+////
+////sleep(1);
+////} 
+//
+//        exit(-1);
 
         if(rc != XN_STATUS_OK) 
         { 
