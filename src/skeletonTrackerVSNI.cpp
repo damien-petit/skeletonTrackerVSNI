@@ -1206,7 +1206,33 @@ namespace skeletonTrackerVSNI
                  }
              }
 
-             for(int iBodyPart = 0; iBodyPart < 15; iBodyPart++ )
+            {
+                double currentPan = 0;
+                double currentTilt = 0;
+                {
+                    std::stringstream ss;
+                    ss << coshellVision_->ExecuteACommand("featureHeadDes.errorIN");
+                    
+                    char tmp;
+                    while(ss >> tmp)
+                    {
+                        if( tmp == '[')
+                        {
+                            ss >> currentPan;
+                        }
+                        if( tmp == ',')
+                        {
+                            ss >> currentTilt;
+                        }
+                    }
+               }
+
+//                result["hrp2"][iUserDetected][iBodyPart]["C"] = (double)jointPos[iBodyPart].fConfidence;
+//                result["hrp2"][iUserDetected][iBodyPart]["C"] = (double)jointPos[iBodyPart].fConfidence;
+                result["hrp2"]["CurrentPan"] = (double)currentPan;
+                result["hrp2"]["CurrentTilt"] = (double)currentTilt;
+            }
+            for(int iBodyPart = 0; iBodyPart < 15; iBodyPart++ )
              {
 //                std::cout<<"iBodyPart "<<iBodyPart<<std::endl;
 //                std::cout<<"NISkeletonRefToHeadTemp_"<<iBodyPart<<std::endl;
