@@ -524,8 +524,8 @@ namespace skeletonTrackerVSNI
 //                    {
 //                        std::cout<<"!!!!!!!!!!!!!!!!!!!1check OK"<<std::endl;
 //                    } 
-                    std::cout<<std::endl;
-                    std::cout<<"begin of visual loop"<<std::endl;
+//                    std::cout<<std::endl;
+//                    std::cout<<"begin of visual loop"<<std::endl;
 
                     {
                         XnSkeletonJointPosition jointHeadPos;
