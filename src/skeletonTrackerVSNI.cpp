@@ -79,8 +79,8 @@ namespace skeletonTrackerVSNI
         dataToLoadOpenCV["distorsionMatrixXtionRGB"] >> distorsionMatrixXtionRGB_;
         dataToLoadOpenCV["headToCamMatrixXtionRGB"] >> headToCamMatrixXtionRGB_;
 
-        std::cout<<cameraMatrixXtionRGB_<<std::endl;
-        std::cout<<headToCamMatrixXtionRGB_<<std::endl;
+//        std::cout<<cameraMatrixXtionRGB_<<std::endl;
+//        std::cout<<headToCamMatrixXtionRGB_<<std::endl;
 
         dataToLoadOpenCV["coshellName_"] >> coshellName_;
 
@@ -181,12 +181,11 @@ namespace skeletonTrackerVSNI
             return;
         if( fill_member(line, "xtion-depth", camNameXd_) )
             return;
-
     }
 
     bool SkeletonTrackerVSNI::pre_fct()
     {
-        cout << "[skeletonTrackerVSNI] pre_fct()" << endl ;
+        std::cout << "[skeletonTrackerVSNI] pre_fct()" << endl ;
         string filename = get_sandbox() + string("/skeletonTrackerVSNI.conf") ;
 
         try 
@@ -241,7 +240,6 @@ namespace skeletonTrackerVSNI
         int nStep;
         XnInt32 nDefault;
         XnBool autoSupported;
-
 
 ////        if(image_->IsCapabilitySupported(XN_CAPABILITY_LOW_LIGHT_COMPENSATION))
 //        if(image_->IsCapabilitySupported(XN_CAPABILITY_HUE))
@@ -381,7 +379,6 @@ namespace skeletonTrackerVSNI
         }
     }
 
-
     void SkeletonTrackerVSNI::startHandsGen()
     {
         handsGen_.StartGenerating();
@@ -396,7 +393,6 @@ namespace skeletonTrackerVSNI
             std::cout<<"handsGenerator succeed to start"<<std::endl;
         }
     }
-
 
     void SkeletonTrackerVSNI::stopUserGen()
     {
@@ -488,7 +484,7 @@ namespace skeletonTrackerVSNI
             imgXd_->copy(imgXd);
 
             {   
-            rgb_to_nb(*imgXi_, *imgXiMONO_);
+                rgb_to_nb(*imgXi_, *imgXiMONO_);
 //raw copy from Image to IplImage    
 
                 //std::memcpy(TheInputImage.data,img_->raw_data, img_->width * img_->height);
@@ -580,16 +576,16 @@ namespace skeletonTrackerVSNI
 
                                 if(checkDeque( posCoMX, posCoMY))
                                 {
-                                    std::cout<<"[from Check COM]check ok"<<std::endl;
+//                                    std::cout<<"[from Check COM]check ok"<<std::endl;
                                     me_->trackChecked_ = true;
-                                    std::cout<<"posCoMX "<<posCoMX<<" posCoMY "<<posCoMY<<std::endl;
+//                                    std::cout<<"posCoMX "<<posCoMX<<" posCoMY "<<posCoMY<<std::endl;
                                 //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
 
                                     userGen_.GetSkeletonCap().StartTracking(aUsers[iUserDetected]);
                                 }
                                 else
                                 {
-                                    std::cout<<"not checked"<<std::endl;
+//                                    std::cout<<"not checked"<<std::endl;
     //                                me_->userGen_.GetSkeletonCap().StopTracking(aUsers[iUserDetected]);
                                 }
                             } 
@@ -621,9 +617,6 @@ namespace skeletonTrackerVSNI
             boost::mutex::scoped_lock lock(NISkeletonFacesResultMutex_);
             NISkeletonFacesResult_ = NISkeletonFaces;
         }
-            //sizeHIstory_
-
-//        NISkeletonFacesResultDeque_.push_back(NISkeletonFaces_);
 
         int dequeSize = NISkeletonFacesResultDeque_.size();
         
@@ -689,14 +682,14 @@ namespace skeletonTrackerVSNI
         
         int sizeDeque = NISkeletonFacesResultDeque.size();
 
-        std::cout<<"sizeDeque "<<sizeDeque<<std::endl;
+//        std::cout<<"sizeDeque "<<sizeDeque<<std::endl;
 
         int sizeFaceResult = 0;        
         
-        std::cout<<"OpenNI result"<<std::endl;
-        std::cout<<"X "<< xFacePos<<" Y "<<yFacePos<<std::endl;
+//        std::cout<<"OpenNI result"<<std::endl;
+//        std::cout<<"X "<< xFacePos<<" Y "<<yFacePos<<std::endl;
 
-        std::cout<<"OpenCV result"<<std::endl;
+//        std::cout<<"OpenCV result"<<std::endl;
 
         for(int i = 0; i < sizeDeque; i++) 
         {
@@ -704,12 +697,12 @@ namespace skeletonTrackerVSNI
         
             sizeFaceResult = NISkeletonFacesResult.size();
 
-            std::cout<<"nbr of faces detected for deque nbr: "<<i<<" faces "<<sizeFaceResult<<std::endl;
+//            std::cout<<"nbr of faces detected for deque nbr: "<<i<<" faces "<<sizeFaceResult<<std::endl;
 
             for(int faceIter = 0; faceIter < sizeFaceResult; faceIter++)
             {
 
-                std::cout<<"faces nbr: "<<faceIter<<sizeDeque<<std::endl;
+//                std::cout<<"faces nbr: "<<faceIter<<sizeDeque<<std::endl;
                 faceRect = NISkeletonFacesResult[faceIter];
             
                 leftXFace = faceRect.x;
@@ -718,10 +711,10 @@ namespace skeletonTrackerVSNI
                 topYFace = faceRect.y;
                 bottomYFace = faceRect.y + faceRect.height;     
 
-                std::cout<<"leftXFace"<< leftXFace << std::endl;
-                std::cout<<"rightXFace"<< rightXFace << std::endl;
-                std::cout<<"topYFace"<< topYFace << std::endl;
-                std::cout<<"bottomYFace"<< bottomYFace << std::endl;
+//                std::cout<<"leftXFace"<< leftXFace << std::endl;
+//                std::cout<<"rightXFace"<< rightXFace << std::endl;
+//                std::cout<<"topYFace"<< topYFace << std::endl;
+//                std::cout<<"bottomYFace"<< bottomYFace << std::endl;
 
                 if(  leftXFace <= xFacePos && xFacePos <= rightXFace )
                 {
@@ -729,7 +722,7 @@ namespace skeletonTrackerVSNI
 //adapted for COM
                     if( yFacePos >= bottomYFace )
                     {
-                        std::cout<<"[check function]check OK"<<std::endl;
+//                        std::cout<<"[check function]check OK"<<std::endl;
                         return 1;
                     }
                 }
@@ -798,7 +791,7 @@ namespace skeletonTrackerVSNI
 
     bool SkeletonTrackerVSNI::post_fct()
     {
-        cout << "[bci-self-interact-vision] post_fct()" << endl ;
+        std::cout << "[bci-self-interact-vision] post_fct()" << endl ;
         unregister_to_cam< vision::Image<uint32_t, vision::RGB> >( camXi_ );
         unregister_to_cam< vision::Image<uint16_t, vision::DEPTH> >( camXd_ );
         return true ;
@@ -815,9 +808,9 @@ namespace skeletonTrackerVSNI
 /*If this scope is block the execute method of xmplrpc will never return a value and so the xmlrpc server will be block and no other request from the client will be treated*/
         if(methodName == "GetObjectPositionNISkeleton")
         {
-            std::cout<<"GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
+//            std::cout<<"GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
             GetObjectPositionNISkeleton(params, result);
-            std::cout<<"end GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
+//            std::cout<<"end GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
         }
     }
 
@@ -1070,7 +1063,6 @@ namespace skeletonTrackerVSNI
                 {
                 }
 //check if there is a new user tracked
-                
             }
         }
         else
@@ -1084,7 +1076,6 @@ namespace skeletonTrackerVSNI
 
     bool SkeletonTrackerVSNI::GetObjectPositionNISkeleton(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result)
     {
-
 // 15 joints + 1 COM 
 //float XnPoint3D
         XnPoint3D ptJointPosReal[16];
@@ -1097,7 +1088,7 @@ namespace skeletonTrackerVSNI
         userGen_.GetUsers(aUsers_, nUsers);
 
         result["userDetectedNbr"] = (int)nUsers;
-        std::cout<<"nUsers "<<(int)nUsers<<std::endl;
+//        std::cout<<"nUsers "<<(int)nUsers<<std::endl;
         for (int iUserDetected = 0; iUserDetected < nUsers; ++iUserDetected)
         {
             if (userGen_.GetSkeletonCap().IsTracking(aUsers_[iUserDetected]))
@@ -1379,8 +1370,6 @@ namespace skeletonTrackerVSNI
 
 //TODO hard copy of the data if we want to speed up the process we van write directly in *result because the pointer has been allocated  in bci-self-interact
           }
-
-
     }
 
 //      void NISkeletonProc::GetNISkeletonResult( XmlRpc::XmlRpcValue & resultINOUT)
@@ -1681,10 +1670,6 @@ namespace skeletonTrackerVSNI
 //  
 //          }
 //      }
-
-
-
-
 } //end namespace skeletonTrackerVSNI
 
 PLUGIN(skeletonTrackerVSNI::SkeletonTrackerVSNI)
