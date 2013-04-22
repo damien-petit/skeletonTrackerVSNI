@@ -552,8 +552,8 @@ namespace skeletonTrackerVSNI
                             for (int iUserDetected = 0; iUserDetected < nUsers; ++iUserDetected)
                             {
 //use th COM of the user
-                                std::cout<<std::endl;
-                                std::cout<<"userNumber "<<iUserDetected<<std::endl;
+//                                std::cout<<std::endl;
+//                                std::cout<<"userNumber "<<iUserDetected<<std::endl;
 
                                 userGen_.GetCoM(aUsers[iUserDetected], ptCOMPos);
 
