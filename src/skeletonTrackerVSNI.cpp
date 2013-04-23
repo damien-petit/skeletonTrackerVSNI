@@ -219,27 +219,12 @@ namespace skeletonTrackerVSNI
         imgXd_ = new vision::Image<uint16_t, vision::DEPTH>(camXd_->get_size());
         imgDispXd_ = new vision::Image<uint16_t, vision::DEPTH>(camXd_->get_size());
 
-        visionsystem::CameraDepthOpenNI* camXd = 0;
-        camXd = dynamic_cast<visionsystem::CameraDepthOpenNI*>(camXd_);
-        {
-            context_ = camXd->get_Context();
-            depth_ = camXd->get_DepthGenerator();
-            depthMD_ =  camXd->get_DepthMetaData();
-        }
-
-        visionsystem::CameraImageOpenNI* camXi = 0;
-        camXi = dynamic_cast<visionsystem::CameraImageOpenNI*>(camXi_);
-        {
-            image_ = camXi->get_ImageGenerator();
-        }
-
-        XnStatus rc = depth_->GetAlternativeViewPointCap().SetViewPoint(*image_); 
-        XnInt32 nMin;
-        XnInt32 nMax;
+//        XnInt32 nMin;
+//        XnInt32 nMax;
 //        XnInt32 nStep;
-        int nStep;
-        XnInt32 nDefault;
-        XnBool autoSupported;
+//        int nStep;
+//        XnInt32 nDefault;
+//        XnBool autoSupported;
 
 ////        if(image_->IsCapabilitySupported(XN_CAPABILITY_LOW_LIGHT_COMPENSATION))
 //        if(image_->IsCapabilitySupported(XN_CAPABILITY_HUE))
@@ -263,27 +248,11 @@ namespace skeletonTrackerVSNI
 //
 //        exit(-1);
 
-        if(rc != XN_STATUS_OK) 
-        { 
-             printf("Failed to set depth map mode \n"); 
-        }
-        else
-        {
-             printf("Succeed to set depth map mode \n");
-
-        }
-
         register_glfunc();
 
         finish_ = true;
 
         whiteboard_write<SkeletonTrackerVSNI *>("plugin_skeletonTrackerVSNI", this);
-
-        initUserGen();
-        userGenStarted_ = false;
-        trackChecked_ = false;
-
-//        initHandsGen();
          
         return true ;
     }
@@ -302,6 +271,35 @@ namespace skeletonTrackerVSNI
         {
             std::cout << "[skeletonTrackerVSNI] No XML-RPC server plugin registered to the server, no biggies" << std::endl;
         }
+
+        visionsystem::CameraDepthOpenNI* camXd = 0;
+        camXd = dynamic_cast<visionsystem::CameraDepthOpenNI*>(camXd_);
+
+        visionsystem::CameraImageOpenNI* camXi = 0;
+        camXi = dynamic_cast<visionsystem::CameraImageOpenNI*>(camXi_);
+
+        context_ = camXd->get_Context();
+        depth_ = camXd->get_DepthGenerator();
+        depthMD_ =  camXd->get_DepthMetaData();
+
+        image_ = camXi->get_ImageGenerator();
+
+        XnStatus rc = depth_->GetAlternativeViewPointCap().SetViewPoint(*image_); 
+
+        if(rc != XN_STATUS_OK)
+        {
+             printf("Failed to set depth map mode \n");
+        }
+        else
+        {
+             printf("Succeed to set depth map mode \n");
+        }
+
+        initUserGen();
+        userGenStarted_ = false;
+        trackChecked_ = false;
+
+        //initHandsGen();
     }
 
     void SkeletonTrackerVSNI::initUserGen()
