@@ -299,7 +299,7 @@ namespace skeletonTrackerVSNI
         userGenStarted_ = false;
         trackChecked_ = false;
 
-        //initHandsGen();
+//        initHandsGen();
     }
 
     void SkeletonTrackerVSNI::initUserGen()
@@ -1125,7 +1125,7 @@ namespace skeletonTrackerVSNI
                 result["user"][iUserDetected]["nId"] = (int)(aUsers_[iUserDetected]);
                 int test = 1;
                 test = (int)result["user"][iUserDetected]["isTrack"];
-                std::cout<<"not tracked and test"<< test<<std::endl;
+//                std::cout<<"not tracked and test"<< test<<std::endl;
 //                std::cout<<"test is track VSNI"<< (bool)result["user"][iUserDetected]["isTrack"]<<std::endl;
                 //we are only interested with the users tracked
                 continue;
