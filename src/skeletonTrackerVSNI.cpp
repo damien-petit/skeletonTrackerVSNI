@@ -299,7 +299,8 @@ namespace skeletonTrackerVSNI
         userGenStarted_ = false;
         trackChecked_ = false;
 
-//        initHandsGen();
+        initHandsGen();
+        startHandsGen();
     }
 
     void SkeletonTrackerVSNI::initUserGen()
@@ -572,19 +573,79 @@ namespace skeletonTrackerVSNI
                                     NISkeletonCOMResult_[iUserDetected] = comResultPerUser;
                                 }
 
-                                if(checkDeque( posCoMX, posCoMY))
+                                if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected]))
                                 {
-//                                    std::cout<<"[from Check COM]check ok"<<std::endl;
-                                    me_->trackChecked_ = true;
-//                                    std::cout<<"posCoMX "<<posCoMX<<" posCoMY "<<posCoMY<<std::endl;
-                                //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
+                                        {
+    //check is tracking 
+                                            XnSkeletonJointPosition jointHandPos;
+                                            XnPoint3D ptHandPos;
 
-                                    userGen_.GetSkeletonCap().StartTracking(aUsers[iUserDetected]);
+                                            if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected]))
+                                            {
+                                                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_HAND, jointHandPos);
+ 
+                                                if(jointHandPos.fConfidence > 0.5)
+                                                {
+                                                    std::cout<<"ask track hand"<<std::endl;
+
+                                                    ptHandPos = jointHandPos.position;
+
+                                                    handsGen_.StartTracking(ptHandPos);
+                                                }
+                                                else
+                                                {
+                                                    std::cout<<"bad hand confidence dont ask track hand"<<std::endl;
+                                                }
+                                            }
+                                            else
+                                            {
+ 
+                                            }
+                                        }
                                 }
                                 else
                                 {
-//                                    std::cout<<"not checked"<<std::endl;
-    //                                me_->userGen_.GetSkeletonCap().StopTracking(aUsers[iUserDetected]);
+                                    if(checkDeque( posCoMX, posCoMY))
+                                    {
+    //                                    std::cout<<"[from Check COM]check ok"<<std::endl;
+                                        me_->trackChecked_ = true;
+    //                                    std::cout<<"posCoMX "<<posCoMX<<" posCoMY "<<posCoMY<<std::endl;
+                                    //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
+    
+                                        userGen_.GetSkeletonCap().StartTracking(aUsers[iUserDetected]);
+//                                        {
+//    //check is tracking 
+//                                            XnSkeletonJointPosition jointHandPos;
+//                                            XnPoint3D ptHandPos;
+//    
+//                                            if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected]))
+//                                            {
+//                                                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected], XN_SKEL_LEFT_HAND, jointHandPos);
+//                                                
+//                                                if(jointHandPos.fConfidence > 0.5)
+//                                                {
+//                                                    std::cout<<"ask track hand"<<std::endl;
+//    
+//                                                    ptHandPos = jointHandPos.position;
+//    
+//                                                    handsGen_.StartTracking(ptHandPos);
+//                                                }
+//                                                else
+//                                                {
+//                                                    std::cout<<"bad hand confidence dont ask track hand"<<std::endl;
+//                                                }
+//                                            }
+//                                            else
+//                                            {
+//            
+//                                            }
+//                                        }
+                                    }
+                                    else
+                                    {
+    //                                    std::cout<<"not checked"<<std::endl;
+        //                                me_->userGen_.GetSkeletonCap().StopTracking(aUsers[iUserDetected]);
+                                    }
                                 }
                             } 
                         }
