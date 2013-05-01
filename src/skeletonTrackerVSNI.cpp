@@ -55,7 +55,8 @@ std::cout << "Call " << #x << " took: " << (tv_diff.tv_sec + ((float)tv_diff.tv_
 
 namespace skeletonTrackerVSNI
 {
-//used to access the member of the class skeletonTrackerVSNI inside the static callback function of OpenNI
+//FIXME me_ used to access the member of the class skeletonTrackerVSNI inside the static callback function of OpenNI
+//FIXME do a singleton patern because of the static functions
     SkeletonTrackerVSNI* me_ = 0;
 
     SkeletonTrackerVSNI::SkeletonTrackerVSNI( visionsystem::VisionSystem *vs, string sandbox )
@@ -78,9 +79,6 @@ namespace skeletonTrackerVSNI
         dataToLoadOpenCV["cameraMatrixXtionRGB"] >> cameraMatrixXtionRGB_;
         dataToLoadOpenCV["distorsionMatrixXtionRGB"] >> distorsionMatrixXtionRGB_;
         dataToLoadOpenCV["headToCamMatrixXtionRGB"] >> headToCamMatrixXtionRGB_;
-
-//        std::cout<<cameraMatrixXtionRGB_<<std::endl;
-//        std::cout<<headToCamMatrixXtionRGB_<<std::endl;
 
         dataToLoadOpenCV["coshellName_"] >> coshellName_;
 
@@ -115,16 +113,15 @@ namespace skeletonTrackerVSNI
 //end used for detect faces in NISkeleton
 
         dataToLoadOpenCV["NISkeletonJointNbrMax_"] >> NISkeletonJointNbrMax_;
+
+        dataToLoadOpenCV.release();
 //RISK
         if(maxSizeDeque_ < 1)
         {
             std::cout<<"[skeletonTrackerVSNI] problem maxSizeDeque_ value should be at least 1"<<std::endl;
         }
 
-        dataToLoadOpenCV.release();
-
 // used in the resul;t transmission function by xmlrpc
-
 //the +1 is for the com of the user detected
         NISkeletonPosInCamTranslation_.resize(NISkeletonJointNbrMax_+1);
         NISkeletonposInTorsoTranslation_.resize(NISkeletonJointNbrMax_+1);
@@ -137,12 +134,17 @@ namespace skeletonTrackerVSNI
             NISkeletonposInTorsoTranslation_[i] = cv::Mat::zeros(4, 1, CV_32F);
         }
 
-        if( !NISkeletonFacesCascade_.load( sandbox_ + NISkeletonFacesCascadeName_ ) )
+        bool NISkeletonFacesCascadeCheck;
+        NISkeletonFacesCascadeCheck = false;
+        NISkeletonFacesCascadeCheck = NISkeletonFacesCascade_.load( sandbox_ + NISkeletonFacesCascadeName_);
+
+        if( NISkeletonFacesCascadeCheck == true)
+        {
+        }
+        else
         { 
             printf("--(!)Error loading NISkeletonFacesCascade_\n"); 
         }
-
-        std::cout<<"coshellName_ "<<coshellName_<<std::endl;
 
         coshellVision_ = new coshell::CoshellClient(coshellName_, 2809, false);
         //We have to  initialize the coshell since we dont use coshell interpreter
@@ -152,16 +154,16 @@ namespace skeletonTrackerVSNI
 
 //used to corespond the nId to the index of the vector
         skeletonUserDetectedVec_.resize(maxUserDetected_);
-
-//        nUsers_ = 15;
     }
 
     SkeletonTrackerVSNI::~SkeletonTrackerVSNI()
     {
         delete imgXi_;
+        delete imgXiMONO_
         delete imgDispXi_;
         delete imgXd_;
         delete imgDispXd_;
+
         delete coshellVision_;
     }
 
