@@ -162,7 +162,7 @@ namespace skeletonTrackerVSNI
     SkeletonTrackerVSNI::~SkeletonTrackerVSNI()
     {
         delete imgXi_;
-        delete imgXiMONO_
+        delete imgXiMONO_;
         delete imgDispXi_;
         delete imgXd_;
         delete imgDispXd_;
@@ -314,21 +314,35 @@ namespace skeletonTrackerVSNI
 
         userIdSelected_ = userIdSelected; 
     }
-
+//TODO mettre cette fonction ds une autre thread pour s assure au que l on ai un bonne confidence pour les poitions des mains 
     bool SkeletonTrackerVSNI::StartHandTracking(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result)
     {
         XnUserID aUsers[maxUserDetected_ - 1];
         XnUInt16 nUsers = maxUserDetected_ - 1;
+
+        int userIdSelected(params[0]["userIdSelected"]);
+        // 0: left 1: right
+        int handSelected(params[0]["handSelected"]);
 
         userGen_.GetUsers(aUsers, nUsers);
 
         XnSkeletonJointPosition jointHandPos;
         XnPoint3D ptHandPos;
     
-        if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected_]))
+        if(userGen_.GetSkeletonCap().IsTracking(aUsers[userIdSelected]))
         {
-            userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected_], XN_SKEL_LEFT_HAND, jointHandPos);
-    
+            if(handSelected == 0)
+            {
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[userIdSelected], XN_SKEL_LEFT_HAND, jointHandPos);
+            }
+            else if(handSelected == 1)
+            {
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[userIdSelected], XN_SKEL_RIGHT_HAND, jointHandPos);
+            }
+            else
+            {
+            }
+
             if(jointHandPos.fConfidence > 0.5)
             {
                 std::cout<<"ask track hand"<<std::endl;
@@ -344,7 +358,6 @@ namespace skeletonTrackerVSNI
         }
         else
         {
-    
         }
     }
 
