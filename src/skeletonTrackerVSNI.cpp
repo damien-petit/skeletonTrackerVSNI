@@ -154,6 +154,9 @@ namespace skeletonTrackerVSNI
 
 //used to corespond the nId to the index of the vector
         skeletonUserDetectedVec_.resize(maxUserDetected_);
+
+//        nUsers_ = 15;
+        userIdSelected_ = -1;
     }
 
     SkeletonTrackerVSNI::~SkeletonTrackerVSNI()
@@ -301,7 +304,48 @@ namespace skeletonTrackerVSNI
         userGenStarted_ = false;
         trackChecked_ = false;
 
-//        initHandsGen();
+        initHandsGen();
+        startHandsGen();
+    }
+
+    bool SkeletonTrackerVSNI::SetUserIdSelectedFromInterface(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result)
+    {
+        int userIdSelected(params[0]["userIdSelected"]);
+
+        userIdSelected_ = userIdSelected; 
+    }
+
+    bool SkeletonTrackerVSNI::StartHandTracking(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result)
+    {
+        XnUserID aUsers[maxUserDetected_ - 1];
+        XnUInt16 nUsers = maxUserDetected_ - 1;
+
+        userGen_.GetUsers(aUsers, nUsers);
+
+        XnSkeletonJointPosition jointHandPos;
+        XnPoint3D ptHandPos;
+    
+        if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected_]))
+        {
+            userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers[iUserDetected_], XN_SKEL_LEFT_HAND, jointHandPos);
+    
+            if(jointHandPos.fConfidence > 0.5)
+            {
+                std::cout<<"ask track hand"<<std::endl;
+    
+                ptHandPos = jointHandPos.position;
+    
+                handsGen_.StartTracking(ptHandPos);
+            }
+            else
+            {
+                std::cout<<"bad hand confidence dont ask track hand"<<std::endl;
+            }
+        }
+        else
+        {
+    
+        }
     }
 
     void SkeletonTrackerVSNI::initUserGen()
@@ -574,19 +618,25 @@ namespace skeletonTrackerVSNI
                                     NISkeletonCOMResult_[iUserDetected] = comResultPerUser;
                                 }
 
-                                if(checkDeque( posCoMX, posCoMY))
+                                if(userGen_.GetSkeletonCap().IsTracking(aUsers[iUserDetected]))
                                 {
-//                                    std::cout<<"[from Check COM]check ok"<<std::endl;
-                                    me_->trackChecked_ = true;
-//                                    std::cout<<"posCoMX "<<posCoMX<<" posCoMY "<<posCoMY<<std::endl;
-                                //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
-
-                                    userGen_.GetSkeletonCap().StartTracking(aUsers[iUserDetected]);
                                 }
                                 else
                                 {
-//                                    std::cout<<"not checked"<<std::endl;
-    //                                me_->userGen_.GetSkeletonCap().StopTracking(aUsers[iUserDetected]);
+                                    if(checkDeque( posCoMX, posCoMY))
+                                    {
+    //                                    std::cout<<"[from Check COM]check ok"<<std::endl;
+                                        me_->trackChecked_ = true;
+    //                                    std::cout<<"posCoMX "<<posCoMX<<" posCoMY "<<posCoMY<<std::endl;
+                                    //    std::cout<<"trackChecked_ "<<me_->trackChecked_<<std::endl;
+    
+                                        userGen_.GetSkeletonCap().StartTracking(aUsers[iUserDetected]);
+                                    }
+                                    else
+                                    {
+    //                                    std::cout<<"not checked"<<std::endl;
+        //                                me_->userGen_.GetSkeletonCap().StopTracking(aUsers[iUserDetected]);
+                                    }
                                 }
                             } 
                         }
@@ -811,6 +861,19 @@ namespace skeletonTrackerVSNI
 //            std::cout<<"GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
             GetObjectPositionNISkeleton(params, result);
 //            std::cout<<"end GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
+        }
+        else if(methodName == "StartHandTracking")
+        {
+//            std::cout<<"GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
+            StartHandTracking(params, result);
+//            std::cout<<"end GetObjectPositionNISkeleton(params, result) called in execute function"<<std::endl;
+        }
+        else if(methodName == "SetUserIdSelectedFromInterface")
+        {
+            SetUserIdSelectedFromInterface(params, result);
+        }
+        else
+        {
         }
     }
 

@@ -59,7 +59,9 @@ namespace skeletonTrackerVSNI
 
             bool GetObjectPositionNISkeleton(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
             bool GetObjectPositionNISkeleton2(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
-
+            bool StartHandTracking(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
+            bool SetUserIdSelectedFromInterface(XmlRpc::XmlRpcValue & params, XmlRpc::XmlRpcValue & result);
+            int getUserSelected();
             void initData();
 
             void initUserGen();
@@ -197,6 +199,8 @@ namespace skeletonTrackerVSNI
             std::vector<cv::Mat> NISkeletonPosInCamTranslation_;
 
 //end used in result transmission by xmlrpc
+            int userIdSelected_;
+
     };
 } // namespace skeletonTrackerVSNI
 
