@@ -1163,23 +1163,23 @@ namespace skeletonTrackerVSNI
                 userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_HEAD, jointPos[0]);
                 userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_NECK, jointPos[1]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_SHOULDER, jointPos[2]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_ELBOW, jointPos[3]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_HAND, jointPos[4]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_SHOULDER, jointPos[2]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_ELBOW, jointPos[3]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_HAND, jointPos[4]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_SHOULDER, jointPos[5]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_ELBOW, jointPos[6]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_HAND, jointPos[7]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_SHOULDER, jointPos[5]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_ELBOW, jointPos[6]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_HAND, jointPos[7]);
     
                 userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_TORSO, jointPos[8]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_HIP, jointPos[9]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_KNEE, jointPos[10]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_FOOT, jointPos[11]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_HIP, jointPos[9]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_KNEE, jointPos[10]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_FOOT, jointPos[11]);
     
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_HIP, jointPos[12]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_KNEE, jointPos[13]);
-                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_RIGHT_FOOT, jointPos[14]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_HIP, jointPos[12]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_KNEE, jointPos[13]);
+                userGen_.GetSkeletonCap().GetSkeletonJointPosition(aUsers_[iUserDetected], XN_SKEL_LEFT_FOOT, jointPos[14]);
             }
             else
             {
