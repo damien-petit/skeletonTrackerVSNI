@@ -1205,9 +1205,10 @@ namespace skeletonTrackerVSNI
 //ptJointPosReal is usefull container because we can use the openNI function for the projection after            
                     ptJointPosReal[iBodyPart] = jointPos[iBodyPart].position;
 //ptJointPos return float
-                    NISkeletonPosInCamTranslation_[iBodyPart].at<float>(0,0) =  ptJointPosReal[iBodyPart].X;
-                    NISkeletonPosInCamTranslation_[iBodyPart].at<float>(1,0) =  ptJointPosReal[iBodyPart].Y;
-                    NISkeletonPosInCamTranslation_[iBodyPart].at<float>(2,0) =  ptJointPosReal[iBodyPart].Z;
+//convert result in meter
+                    NISkeletonPosInCamTranslation_[iBodyPart].at<float>(0,0) =  0.001*ptJointPosReal[iBodyPart].X;
+                    NISkeletonPosInCamTranslation_[iBodyPart].at<float>(1,0) =  0.001*ptJointPosReal[iBodyPart].Y;
+                    NISkeletonPosInCamTranslation_[iBodyPart].at<float>(2,0) =  0.001*ptJointPosReal[iBodyPart].Z;
                     NISkeletonPosInCamTranslation_[iBodyPart].at<float>(3,0) = 1;
 //a examiner le calcul effectuei
 //regader la doc file:///home/petit/Downloads/OpenNI-Bin-ev-Linux-x86-v1.5.4.0/Documentation/html/conc_coord.html
@@ -1225,9 +1226,9 @@ namespace skeletonTrackerVSNI
 
 //compute the joint detected in the waist position
 
-            NISkeletonRefToHeadTemp_.at<float>(3,0) = 0;
-            NISkeletonRefToHeadTemp_.at<float>(3,1) = 0;
-            NISkeletonRefToHeadTemp_.at<float>(3,2) = 0;
+            NISkeletonRefToHeadTemp_.at<float>(3,0) = 0.0;
+            NISkeletonRefToHeadTemp_.at<float>(3,1) = 0.0;
+            NISkeletonRefToHeadTemp_.at<float>(3,2) = 0.0;
             NISkeletonRefToHeadTemp_.at<float>(3,3) = 1;
 
             {
