@@ -193,7 +193,7 @@ namespace skeletonTrackerVSNI
             
             cv::Mat NISkeletonRefToHeadTemp_;
 
-            std::vector<cv::Mat> NISkeletonposInTorsoTranslation_;
+            std::vector<cv::Mat> NISkeletonPosInTorsoTranslation_;
             std::vector<cv::Mat> NISkeletonPosInCamTranslation_;
 
 //end used in result transmission by xmlrpc

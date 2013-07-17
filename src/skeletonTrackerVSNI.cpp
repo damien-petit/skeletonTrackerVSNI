@@ -127,14 +127,14 @@ namespace skeletonTrackerVSNI
 
 //the +1 is for the com of the user detected
         NISkeletonPosInCamTranslation_.resize(NISkeletonJointNbrMax_+1);
-        NISkeletonposInTorsoTranslation_.resize(NISkeletonJointNbrMax_+1);
+        NISkeletonPosInTorsoTranslation_.resize(NISkeletonJointNbrMax_+1);
 
         NISkeletonRefToHeadTemp_ = cv::Mat::zeros(4,4,CV_32F);
 
         for(int i = 0; i < NISkeletonJointNbrMax_+1; i++)
         {
             NISkeletonPosInCamTranslation_[i] = cv::Mat::zeros(4, 1, CV_32F);
-            NISkeletonposInTorsoTranslation_[i] = cv::Mat::zeros(4, 1, CV_32F);
+            NISkeletonPosInTorsoTranslation_[i] = cv::Mat::zeros(4, 1, CV_32F);
         }
 
         if( !NISkeletonFacesCascade_.load( sandbox_ + NISkeletonFacesCascadeName_ ) )
@@ -1003,77 +1003,77 @@ namespace skeletonTrackerVSNI
         //                std::cout<<headToCamMatrixXtionRGB_<<std::endl;
         //                std::cout<<"NISkeletonPosInCamTranslation_"<<std::endl;
         //                std::cout<<NISkeletonPosInCamTranslation_[iBodyPart]<<std::endl;
-                        NISkeletonposInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
+                        NISkeletonPosInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
                      }
 
 //RealWorld Position in torsoreference
                     {
 //                        std::vector<NISkeleton::NISkeletonUserJoints> skeletonUserJointsVec_;
 //                        boost::mutex NISkeletonUserJointsMutex_;
-                        skeletonUserDetectedVec[iUserDetected].joints.head.waistPos.x = (double)NISkeletonposInTorsoTranslation_[0].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.head.waistPos.y = (double)NISkeletonposInTorsoTranslation_[0].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.head.waistPos.z = (double)NISkeletonposInTorsoTranslation_[0].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.head.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[0].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.head.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[0].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.head.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[0].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.neck.waistPos.x = (double)NISkeletonposInTorsoTranslation_[1].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.neck.waistPos.y = (double)NISkeletonposInTorsoTranslation_[1].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.neck.waistPos.z = (double)NISkeletonposInTorsoTranslation_[1].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.neck.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[1].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.neck.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[1].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.neck.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[1].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.leftShoulder.waistPos.x = (double)NISkeletonposInTorsoTranslation_[2].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftShoulder.waistPos.y = (double)NISkeletonposInTorsoTranslation_[2].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftShoulder.waistPos.z = (double)NISkeletonposInTorsoTranslation_[2].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftShoulder.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[2].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftShoulder.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[2].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftShoulder.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[2].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.leftElbow.waistPos.x = (double)NISkeletonposInTorsoTranslation_[3].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftElbow.waistPos.y = (double)NISkeletonposInTorsoTranslation_[3].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftElbow.waistPos.z = (double)NISkeletonposInTorsoTranslation_[3].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftElbow.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[3].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftElbow.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[3].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftElbow.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[3].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.leftHand.waistPos.x = (double)NISkeletonposInTorsoTranslation_[4].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftHand.waistPos.y = (double)NISkeletonposInTorsoTranslation_[4].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftHand.waistPos.z = (double)NISkeletonposInTorsoTranslation_[4].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftHand.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[4].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftHand.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[4].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftHand.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[4].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.rightShoulder.waistPos.x = (double)NISkeletonposInTorsoTranslation_[5].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightShoulder.waistPos.y = (double)NISkeletonposInTorsoTranslation_[5].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightShoulder.waistPos.z = (double)NISkeletonposInTorsoTranslation_[5].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightShoulder.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[5].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightShoulder.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[5].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightShoulder.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[5].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.rightElbow.waistPos.x = (double)NISkeletonposInTorsoTranslation_[6].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightElbow.waistPos.y = (double)NISkeletonposInTorsoTranslation_[6].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightElbow.waistPos.z = (double)NISkeletonposInTorsoTranslation_[6].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightElbow.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[6].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightElbow.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[6].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightElbow.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[6].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.rightHand.waistPos.x = (double)NISkeletonposInTorsoTranslation_[7].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightHand.waistPos.y = (double)NISkeletonposInTorsoTranslation_[7].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightHand.waistPos.z = (double)NISkeletonposInTorsoTranslation_[7].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightHand.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[7].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightHand.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[7].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightHand.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[7].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.torso.waistPos.x = (double)NISkeletonposInTorsoTranslation_[8].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.torso.waistPos.y = (double)NISkeletonposInTorsoTranslation_[8].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.torso.waistPos.z = (double)NISkeletonposInTorsoTranslation_[8].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.torso.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[8].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.torso.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[8].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.torso.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[8].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.leftHip.waistPos.x = (double)NISkeletonposInTorsoTranslation_[9].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftHip.waistPos.y = (double)NISkeletonposInTorsoTranslation_[9].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftHip.waistPos.z = (double)NISkeletonposInTorsoTranslation_[9].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftHip.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[9].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftHip.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[9].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftHip.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[9].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.leftKnee.waistPos.x = (double)NISkeletonposInTorsoTranslation_[10].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftKnee.waistPos.y = (double)NISkeletonposInTorsoTranslation_[10].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftKnee.waistPos.z = (double)NISkeletonposInTorsoTranslation_[10].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftKnee.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[10].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftKnee.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[10].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftKnee.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[10].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.leftFoot.waistPos.x = (double)NISkeletonposInTorsoTranslation_[11].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftFoot.waistPos.y = (double)NISkeletonposInTorsoTranslation_[11].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.leftFoot.waistPos.z = (double)NISkeletonposInTorsoTranslation_[11].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftFoot.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[11].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftFoot.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[11].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.leftFoot.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[11].at<float>(2,0);
         
         
-                        skeletonUserDetectedVec[iUserDetected].joints.rightHip.waistPos.x = (double)NISkeletonposInTorsoTranslation_[12].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightHip.waistPos.y = (double)NISkeletonposInTorsoTranslation_[12].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightHip.waistPos.z = (double)NISkeletonposInTorsoTranslation_[12].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightHip.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[12].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightHip.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[12].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightHip.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[12].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.rightKnee.waistPos.x = (double)NISkeletonposInTorsoTranslation_[13].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightKnee.waistPos.y = (double)NISkeletonposInTorsoTranslation_[13].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightKnee.waistPos.z = (double)NISkeletonposInTorsoTranslation_[13].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightKnee.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[13].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightKnee.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[13].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightKnee.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[13].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.rightFoot.waistPos.x = (double)NISkeletonposInTorsoTranslation_[14].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightFoot.waistPos.y = (double)NISkeletonposInTorsoTranslation_[14].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.rightFoot.waistPos.z = (double)NISkeletonposInTorsoTranslation_[14].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightFoot.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[14].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightFoot.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[14].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.rightFoot.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[14].at<float>(2,0);
         
-                        skeletonUserDetectedVec[iUserDetected].joints.COM.waistPos.x = (double)NISkeletonposInTorsoTranslation_[15].at<float>(0,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.COM.waistPos.y = (double)NISkeletonposInTorsoTranslation_[15].at<float>(1,0);
-                        skeletonUserDetectedVec[iUserDetected].joints.COM.waistPos.z = (double)NISkeletonposInTorsoTranslation_[15].at<float>(2,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.COM.waistPos.x = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(0,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.COM.waistPos.y = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(1,0);
+                        skeletonUserDetectedVec[iUserDetected].joints.COM.waistPos.z = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(2,0);
         
                         depth_->ConvertRealWorldToProjective(16, ptJointPosReal, ptJointPosProjective);
         
@@ -1305,7 +1305,7 @@ namespace skeletonTrackerVSNI
 //                std::cout<<headToCamMatrixXtionRGB_<<std::endl;
 //                std::cout<<"NISkeletonPosInCamTranslation_"<<std::endl;
 //                std::cout<<NISkeletonPosInCamTranslation_[iBodyPart]<<std::endl;
-                NISkeletonposInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
+                NISkeletonPosInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
              }
 
 //RealWorld Position in torsoreference
@@ -1327,70 +1327,70 @@ namespace skeletonTrackerVSNI
 //RightKnee 13
 //RightFoot 14
 //COM 15
-            result["pos"][iUserDetected][0]["T"][0] = (double)NISkeletonposInTorsoTranslation_[0].at<float>(0,0);
-            result["pos"][iUserDetected][0]["T"][1] = (double)NISkeletonposInTorsoTranslation_[0].at<float>(1,0);
-            result["pos"][iUserDetected][0]["T"][2] = (double)NISkeletonposInTorsoTranslation_[0].at<float>(2,0);
+            result["pos"][iUserDetected][0]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[0].at<float>(0,0);
+            result["pos"][iUserDetected][0]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[0].at<float>(1,0);
+            result["pos"][iUserDetected][0]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[0].at<float>(2,0);
 
-            result["pos"][iUserDetected][1]["T"][0] = (double)NISkeletonposInTorsoTranslation_[1].at<float>(0,0);
-            result["pos"][iUserDetected][1]["T"][1] = (double)NISkeletonposInTorsoTranslation_[1].at<float>(1,0);
-            result["pos"][iUserDetected][1]["T"][2] = (double)NISkeletonposInTorsoTranslation_[1].at<float>(2,0);
+            result["pos"][iUserDetected][1]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[1].at<float>(0,0);
+            result["pos"][iUserDetected][1]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[1].at<float>(1,0);
+            result["pos"][iUserDetected][1]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[1].at<float>(2,0);
 
-            result["pos"][iUserDetected][2]["T"][0] = (double)NISkeletonposInTorsoTranslation_[2].at<float>(0,0);
-            result["pos"][iUserDetected][2]["T"][1] = (double)NISkeletonposInTorsoTranslation_[2].at<float>(1,0);
-            result["pos"][iUserDetected][2]["T"][2] = (double)NISkeletonposInTorsoTranslation_[2].at<float>(2,0);
+            result["pos"][iUserDetected][2]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[2].at<float>(0,0);
+            result["pos"][iUserDetected][2]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[2].at<float>(1,0);
+            result["pos"][iUserDetected][2]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[2].at<float>(2,0);
 
-            result["pos"][iUserDetected][3]["T"][0] = (double)NISkeletonposInTorsoTranslation_[3].at<float>(0,0);
-            result["pos"][iUserDetected][3]["T"][1] = (double)NISkeletonposInTorsoTranslation_[3].at<float>(1,0);
-            result["pos"][iUserDetected][3]["T"][2] = (double)NISkeletonposInTorsoTranslation_[3].at<float>(2,0);
+            result["pos"][iUserDetected][3]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[3].at<float>(0,0);
+            result["pos"][iUserDetected][3]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[3].at<float>(1,0);
+            result["pos"][iUserDetected][3]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[3].at<float>(2,0);
 
-            result["pos"][iUserDetected][4]["T"][0] = (double)NISkeletonposInTorsoTranslation_[4].at<float>(0,0);
-            result["pos"][iUserDetected][4]["T"][1] = (double)NISkeletonposInTorsoTranslation_[4].at<float>(1,0);
-            result["pos"][iUserDetected][4]["T"][2] = (double)NISkeletonposInTorsoTranslation_[4].at<float>(2,0);
+            result["pos"][iUserDetected][4]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[4].at<float>(0,0);
+            result["pos"][iUserDetected][4]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[4].at<float>(1,0);
+            result["pos"][iUserDetected][4]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[4].at<float>(2,0);
 
-            result["pos"][iUserDetected][5]["T"][0] = (double)NISkeletonposInTorsoTranslation_[5].at<float>(0,0);
-            result["pos"][iUserDetected][5]["T"][1] = (double)NISkeletonposInTorsoTranslation_[5].at<float>(1,0);
-            result["pos"][iUserDetected][5]["T"][2] = (double)NISkeletonposInTorsoTranslation_[5].at<float>(2,0);
+            result["pos"][iUserDetected][5]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[5].at<float>(0,0);
+            result["pos"][iUserDetected][5]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[5].at<float>(1,0);
+            result["pos"][iUserDetected][5]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[5].at<float>(2,0);
 
-            result["pos"][iUserDetected][6]["T"][0] = (double)NISkeletonposInTorsoTranslation_[6].at<float>(0,0);
-            result["pos"][iUserDetected][6]["T"][1] = (double)NISkeletonposInTorsoTranslation_[6].at<float>(1,0);
-            result["pos"][iUserDetected][6]["T"][2] = (double)NISkeletonposInTorsoTranslation_[6].at<float>(2,0);
+            result["pos"][iUserDetected][6]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[6].at<float>(0,0);
+            result["pos"][iUserDetected][6]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[6].at<float>(1,0);
+            result["pos"][iUserDetected][6]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[6].at<float>(2,0);
 
-            result["pos"][iUserDetected][7]["T"][0] = (double)NISkeletonposInTorsoTranslation_[7].at<float>(0,0);
-            result["pos"][iUserDetected][7]["T"][1] = (double)NISkeletonposInTorsoTranslation_[7].at<float>(1,0);
-            result["pos"][iUserDetected][7]["T"][2] = (double)NISkeletonposInTorsoTranslation_[7].at<float>(2,0);
+            result["pos"][iUserDetected][7]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[7].at<float>(0,0);
+            result["pos"][iUserDetected][7]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[7].at<float>(1,0);
+            result["pos"][iUserDetected][7]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[7].at<float>(2,0);
 
-            result["pos"][iUserDetected][8]["T"][0] = (double)NISkeletonposInTorsoTranslation_[8].at<float>(0,0);
-            result["pos"][iUserDetected][8]["T"][1] = (double)NISkeletonposInTorsoTranslation_[8].at<float>(1,0);
-            result["pos"][iUserDetected][8]["T"][2] = (double)NISkeletonposInTorsoTranslation_[8].at<float>(2,0);
+            result["pos"][iUserDetected][8]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[8].at<float>(0,0);
+            result["pos"][iUserDetected][8]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[8].at<float>(1,0);
+            result["pos"][iUserDetected][8]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[8].at<float>(2,0);
 
-            result["pos"][iUserDetected][9]["T"][0] = (double)NISkeletonposInTorsoTranslation_[9].at<float>(0,0);
-            result["pos"][iUserDetected][9]["T"][1] = (double)NISkeletonposInTorsoTranslation_[9].at<float>(1,0);
-            result["pos"][iUserDetected][9]["T"][2] = (double)NISkeletonposInTorsoTranslation_[9].at<float>(2,0);
+            result["pos"][iUserDetected][9]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[9].at<float>(0,0);
+            result["pos"][iUserDetected][9]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[9].at<float>(1,0);
+            result["pos"][iUserDetected][9]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[9].at<float>(2,0);
 
-            result["pos"][iUserDetected][10]["T"][0] = (double)NISkeletonposInTorsoTranslation_[10].at<float>(0,0);
-            result["pos"][iUserDetected][10]["T"][1] = (double)NISkeletonposInTorsoTranslation_[10].at<float>(1,0);
-            result["pos"][iUserDetected][10]["T"][2] = (double)NISkeletonposInTorsoTranslation_[10].at<float>(2,0);
+            result["pos"][iUserDetected][10]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[10].at<float>(0,0);
+            result["pos"][iUserDetected][10]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[10].at<float>(1,0);
+            result["pos"][iUserDetected][10]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[10].at<float>(2,0);
 
-            result["pos"][iUserDetected][11]["T"][0] = (double)NISkeletonposInTorsoTranslation_[11].at<float>(0,0);
-            result["pos"][iUserDetected][11]["T"][1] = (double)NISkeletonposInTorsoTranslation_[11].at<float>(1,0);
-            result["pos"][iUserDetected][11]["T"][2] = (double)NISkeletonposInTorsoTranslation_[11].at<float>(2,0);
+            result["pos"][iUserDetected][11]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[11].at<float>(0,0);
+            result["pos"][iUserDetected][11]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[11].at<float>(1,0);
+            result["pos"][iUserDetected][11]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[11].at<float>(2,0);
 
 
-            result["pos"][iUserDetected][12]["T"][0] = (double)NISkeletonposInTorsoTranslation_[12].at<float>(0,0);
-            result["pos"][iUserDetected][12]["T"][1] = (double)NISkeletonposInTorsoTranslation_[12].at<float>(1,0);
-            result["pos"][iUserDetected][12]["T"][2] = (double)NISkeletonposInTorsoTranslation_[12].at<float>(2,0);
+            result["pos"][iUserDetected][12]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[12].at<float>(0,0);
+            result["pos"][iUserDetected][12]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[12].at<float>(1,0);
+            result["pos"][iUserDetected][12]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[12].at<float>(2,0);
 
-            result["pos"][iUserDetected][13]["T"][0] = (double)NISkeletonposInTorsoTranslation_[13].at<float>(0,0);
-            result["pos"][iUserDetected][13]["T"][1] = (double)NISkeletonposInTorsoTranslation_[13].at<float>(1,0);
-            result["pos"][iUserDetected][13]["T"][2] = (double)NISkeletonposInTorsoTranslation_[13].at<float>(2,0);
+            result["pos"][iUserDetected][13]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[13].at<float>(0,0);
+            result["pos"][iUserDetected][13]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[13].at<float>(1,0);
+            result["pos"][iUserDetected][13]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[13].at<float>(2,0);
 
-            result["pos"][iUserDetected][14]["T"][0] = (double)NISkeletonposInTorsoTranslation_[14].at<float>(0,0);
-            result["pos"][iUserDetected][14]["T"][1] = (double)NISkeletonposInTorsoTranslation_[14].at<float>(1,0);
-            result["pos"][iUserDetected][14]["T"][2] = (double)NISkeletonposInTorsoTranslation_[14].at<float>(2,0);
+            result["pos"][iUserDetected][14]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[14].at<float>(0,0);
+            result["pos"][iUserDetected][14]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[14].at<float>(1,0);
+            result["pos"][iUserDetected][14]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[14].at<float>(2,0);
 
-            result["pos"][iUserDetected][15]["T"][0] = (double)NISkeletonposInTorsoTranslation_[15].at<float>(0,0);
-            result["pos"][iUserDetected][15]["T"][1] = (double)NISkeletonposInTorsoTranslation_[15].at<float>(1,0);
-            result["pos"][iUserDetected][15]["T"][2] = (double)NISkeletonposInTorsoTranslation_[15].at<float>(2,0);
+            result["pos"][iUserDetected][15]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(0,0);
+            result["pos"][iUserDetected][15]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(1,0);
+            result["pos"][iUserDetected][15]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(2,0);
 
             depth_->ConvertRealWorldToProjective(16, ptJointPosReal, ptJointPosProjective);
 
@@ -1620,75 +1620,75 @@ namespace skeletonTrackerVSNI
 //  
 //               for(int iBodyPart = 0; iBodyPart < 15; iBodyPart++ )
 //               {
-//                   NISkeletonposInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixLeft_)*NISkeletonPosInCamTranslation_[iBodyPart];
+//                   NISkeletonPosInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixLeft_)*NISkeletonPosInCamTranslation_[iBodyPart];
 //               }
 //  //                ARCodeposInTorsoTranslation_[iSize] = (ARCodeRefToHeadTemp_*headToCamMatrixLeft_)*ARCodePosInCamTranslationTemp_;
 //  
 //  //RealWorld Position in torsoreference
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Head"]["T"][0] = NISkeletonposInTorsoTranslation_[0].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Head"]["T"][1] = NISkeletonposInTorsoTranslation_[0].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Head"]["T"][2] = NISkeletonposInTorsoTranslation_[0].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Head"]["T"][0] = NISkeletonPosInTorsoTranslation_[0].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Head"]["T"][1] = NISkeletonPosInTorsoTranslation_[0].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Head"]["T"][2] = NISkeletonPosInTorsoTranslation_[0].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Neck"]["T"][0] = NISkeletonposInTorsoTranslation_[1].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Neck"]["T"][1] = NISkeletonposInTorsoTranslation_[1].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Neck"]["T"][2] = NISkeletonposInTorsoTranslation_[1].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Neck"]["T"][0] = NISkeletonPosInTorsoTranslation_[1].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Neck"]["T"][1] = NISkeletonPosInTorsoTranslation_[1].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Neck"]["T"][2] = NISkeletonPosInTorsoTranslation_[1].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftShoulder"]["T"][0] = NISkeletonposInTorsoTranslation_[2].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftShoulder"]["T"][1] = NISkeletonposInTorsoTranslation_[2].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftShoulder"]["T"][2] = NISkeletonposInTorsoTranslation_[2].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftShoulder"]["T"][0] = NISkeletonPosInTorsoTranslation_[2].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftShoulder"]["T"][1] = NISkeletonPosInTorsoTranslation_[2].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftShoulder"]["T"][2] = NISkeletonPosInTorsoTranslation_[2].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftElbow"]["T"][0] = NISkeletonposInTorsoTranslation_[3].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftElbow"]["T"][1] = NISkeletonposInTorsoTranslation_[3].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftElbow"]["T"][2] = NISkeletonposInTorsoTranslation_[3].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftElbow"]["T"][0] = NISkeletonPosInTorsoTranslation_[3].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftElbow"]["T"][1] = NISkeletonPosInTorsoTranslation_[3].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftElbow"]["T"][2] = NISkeletonPosInTorsoTranslation_[3].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHand"]["T"][0] = NISkeletonposInTorsoTranslation_[4].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHand"]["T"][1] = NISkeletonposInTorsoTranslation_[4].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHand"]["T"][2] = NISkeletonposInTorsoTranslation_[4].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHand"]["T"][0] = NISkeletonPosInTorsoTranslation_[4].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHand"]["T"][1] = NISkeletonPosInTorsoTranslation_[4].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHand"]["T"][2] = NISkeletonPosInTorsoTranslation_[4].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightShoulder"]["T"][0] = NISkeletonposInTorsoTranslation_[5].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightShoulder"]["T"][1] = NISkeletonposInTorsoTranslation_[5].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightShoulder"]["T"][2] = NISkeletonposInTorsoTranslation_[5].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightShoulder"]["T"][0] = NISkeletonPosInTorsoTranslation_[5].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightShoulder"]["T"][1] = NISkeletonPosInTorsoTranslation_[5].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightShoulder"]["T"][2] = NISkeletonPosInTorsoTranslation_[5].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightElbow"]["T"][0] = NISkeletonposInTorsoTranslation_[6].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightElbow"]["T"][1] = NISkeletonposInTorsoTranslation_[6].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightElbow"]["T"][2] = NISkeletonposInTorsoTranslation_[6].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightElbow"]["T"][0] = NISkeletonPosInTorsoTranslation_[6].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightElbow"]["T"][1] = NISkeletonPosInTorsoTranslation_[6].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightElbow"]["T"][2] = NISkeletonPosInTorsoTranslation_[6].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHand"]["T"][0] = NISkeletonposInTorsoTranslation_[7].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHand"]["T"][1] = NISkeletonposInTorsoTranslation_[7].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHand"]["T"][2] = NISkeletonposInTorsoTranslation_[7].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHand"]["T"][0] = NISkeletonPosInTorsoTranslation_[7].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHand"]["T"][1] = NISkeletonPosInTorsoTranslation_[7].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHand"]["T"][2] = NISkeletonPosInTorsoTranslation_[7].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Torso"]["T"][0] = NISkeletonposInTorsoTranslation_[8].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Torso"]["T"][1] = NISkeletonposInTorsoTranslation_[8].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Torso"]["T"][2] = NISkeletonposInTorsoTranslation_[8].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Torso"]["T"][0] = NISkeletonPosInTorsoTranslation_[8].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Torso"]["T"][1] = NISkeletonPosInTorsoTranslation_[8].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["Torso"]["T"][2] = NISkeletonPosInTorsoTranslation_[8].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHip"]["T"][0] = NISkeletonposInTorsoTranslation_[9].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHip"]["T"][1] = NISkeletonposInTorsoTranslation_[9].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHip"]["T"][2] = NISkeletonposInTorsoTranslation_[9].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHip"]["T"][0] = NISkeletonPosInTorsoTranslation_[9].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHip"]["T"][1] = NISkeletonPosInTorsoTranslation_[9].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftHip"]["T"][2] = NISkeletonPosInTorsoTranslation_[9].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftKnee"]["T"][0] = NISkeletonposInTorsoTranslation_[10].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftKnee"]["T"][1] = NISkeletonposInTorsoTranslation_[10].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftKnee"]["T"][2] = NISkeletonposInTorsoTranslation_[10].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftKnee"]["T"][0] = NISkeletonPosInTorsoTranslation_[10].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftKnee"]["T"][1] = NISkeletonPosInTorsoTranslation_[10].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftKnee"]["T"][2] = NISkeletonPosInTorsoTranslation_[10].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftFoot"]["T"][0] = NISkeletonposInTorsoTranslation_[11].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftFoot"]["T"][1] = NISkeletonposInTorsoTranslation_[11].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftFoot"]["T"][2] = NISkeletonposInTorsoTranslation_[11].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftFoot"]["T"][0] = NISkeletonPosInTorsoTranslation_[11].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftFoot"]["T"][1] = NISkeletonPosInTorsoTranslation_[11].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["LeftFoot"]["T"][2] = NISkeletonPosInTorsoTranslation_[11].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHip"]["T"][0] = NISkeletonposInTorsoTranslation_[12].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHip"]["T"][1] = NISkeletonposInTorsoTranslation_[12].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHip"]["T"][2] = NISkeletonposInTorsoTranslation_[12].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHip"]["T"][0] = NISkeletonPosInTorsoTranslation_[12].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHip"]["T"][1] = NISkeletonPosInTorsoTranslation_[12].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightHip"]["T"][2] = NISkeletonPosInTorsoTranslation_[12].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightKnee"]["T"][0] = NISkeletonposInTorsoTranslation_[13].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightKnee"]["T"][1] = NISkeletonposInTorsoTranslation_[13].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightKnee"]["T"][2] = NISkeletonposInTorsoTranslation_[13].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightKnee"]["T"][0] = NISkeletonPosInTorsoTranslation_[13].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightKnee"]["T"][1] = NISkeletonPosInTorsoTranslation_[13].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightKnee"]["T"][2] = NISkeletonPosInTorsoTranslation_[13].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightFoot"]["T"][0] = NISkeletonposInTorsoTranslation_[14].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightFoot"]["T"][1] = NISkeletonposInTorsoTranslation_[14].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightFoot"]["T"][2] = NISkeletonposInTorsoTranslation_[14].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightFoot"]["T"][0] = NISkeletonPosInTorsoTranslation_[14].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightFoot"]["T"][1] = NISkeletonPosInTorsoTranslation_[14].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["RightFoot"]["T"][2] = NISkeletonPosInTorsoTranslation_[14].at<float>(2,0);
 //  
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["COM"]["T"][0] = NISkeletonposInTorsoTranslation_[15].at<float>(0,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["COM"]["T"][1] = NISkeletonposInTorsoTranslation_[15].at<float>(1,0);
-//              resultINOUT["NISkeleton"]["user"][iUserDetected]["COM"]["T"][2] = NISkeletonposInTorsoTranslation_[15].at<float>(2,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["COM"]["T"][0] = NISkeletonPosInTorsoTranslation_[15].at<float>(0,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["COM"]["T"][1] = NISkeletonPosInTorsoTranslation_[15].at<float>(1,0);
+//              resultINOUT["NISkeleton"]["user"][iUserDetected]["COM"]["T"][2] = NISkeletonPosInTorsoTranslation_[15].at<float>(2,0);
 //  
 //              depth_->ConvertRealWorldToProjective(16, ptJointPos, ptJointPos);
 //  
