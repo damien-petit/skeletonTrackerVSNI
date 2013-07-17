@@ -1224,6 +1224,12 @@ namespace skeletonTrackerVSNI
 
             userGen_.GetCoM(aUsers_[iUserDetected], ptJointPosReal[15]);
 
+//put the COM information in NISkeletonPosInCamTranslation_
+            NISkeletonPosInCamTranslation_[15].at<float>(0,0) =  0.001*ptJointPosReal[15].X;
+            NISkeletonPosInCamTranslation_[15].at<float>(1,0) =  0.001*ptJointPosReal[15].Y;
+            NISkeletonPosInCamTranslation_[15].at<float>(2,0) =  0.001*ptJointPosReal[15].Z;
+            NISkeletonPosInCamTranslation_[15].at<float>(3,0) = 1;
+
 //compute the joint detected in the waist position
 
             NISkeletonRefToHeadTemp_.at<float>(3,0) = 0.0;
@@ -1290,7 +1296,7 @@ namespace skeletonTrackerVSNI
 //                result["hrp2"]["currentPan"] = (double)currentPan;
 //                result["hrp2"]["currentTilt"] = (double)currentTilt;
 //            }
-            for(int iBodyPart = 0; iBodyPart < 15; iBodyPart++ )
+            for(int iBodyPart = 0; iBodyPart < 16; iBodyPart++ )
              {
 //                std::cout<<"iBodyPart "<<iBodyPart<<std::endl;
 //                std::cout<<"NISkeletonRefToHeadTemp_"<<iBodyPart<<std::endl;
