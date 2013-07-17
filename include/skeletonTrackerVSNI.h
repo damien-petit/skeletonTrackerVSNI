@@ -195,6 +195,7 @@ namespace skeletonTrackerVSNI
 
             std::vector<cv::Mat> NISkeletonPosInTorsoTranslation_;
             std::vector<cv::Mat> NISkeletonPosInCamTranslation_;
+            std::vector<cv::Mat> NISkeletonPosInWorldTranslation_;
 
 //end used in result transmission by xmlrpc
     };

@@ -128,6 +128,7 @@ namespace skeletonTrackerVSNI
 //the +1 is for the com of the user detected
         NISkeletonPosInCamTranslation_.resize(NISkeletonJointNbrMax_+1);
         NISkeletonPosInTorsoTranslation_.resize(NISkeletonJointNbrMax_+1);
+        NISkeletonPosInWorldTranslation_.resize(NISkeletonJointNbrMax_+1);
 
         NISkeletonRefToHeadTemp_ = cv::Mat::zeros(4,4,CV_32F);
 
@@ -135,6 +136,7 @@ namespace skeletonTrackerVSNI
         {
             NISkeletonPosInCamTranslation_[i] = cv::Mat::zeros(4, 1, CV_32F);
             NISkeletonPosInTorsoTranslation_[i] = cv::Mat::zeros(4, 1, CV_32F);
+            NISkeletonPosInWorldTranslation_[i] = cv::Mat::zeros(4, 1, CV_32F);
         }
 
         if( !NISkeletonFacesCascade_.load( sandbox_ + NISkeletonFacesCascadeName_ ) )
@@ -1006,6 +1008,46 @@ namespace skeletonTrackerVSNI
                         NISkeletonPosInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
                      }
 
+                    {
+                         std::stringstream ss;
+                         ss << coshellVision_->ExecuteACommand("dyn.head");
+                         //std::cout<<"VISION"<<std::endl;
+                         int i = 0;
+                         int j = 0;
+                         double value;
+                         char tmp;
+                         while(ss >> tmp)
+                         {
+                             if( tmp == ';' )
+                             {
+                                 ++i;
+                                 j = 0;
+                             }
+                             if( tmp == '[' || ( tmp == ',' && j != 4) || tmp == ';' )
+                             {
+                                 ss >> value;
+                                 NISkeletonRefToHeadTemp_.at<float>(i,j) = value;
+                                 ++j;
+                             }
+                             if( tmp == ']' )
+                             {
+                                 break;
+                             }
+                         }
+                     }
+
+                     for(int iBodyPart = 0; iBodyPart < 15; iBodyPart++ )
+                     {
+        //                std::cout<<"iBodyPart "<<iBodyPart<<std::endl;
+        //                std::cout<<"NISkeletonRefToHeadTemp_"<<iBodyPart<<std::endl;
+        //                std::cout<<NISkeletonRefToHeadTemp_<<std::endl;
+        //                std::cout<<"headToCamMatrixXtionRGB_"<<std::endl;
+        //                std::cout<<headToCamMatrixXtionRGB_<<std::endl;
+        //                std::cout<<"NISkeletonPosInCamTranslation_"<<std::endl;
+        //                std::cout<<NISkeletonPosInCamTranslation_[iBodyPart]<<std::endl;
+                        NISkeletonPosInWorldTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
+                     }
+
 //RealWorld Position in torsoreference
                     {
 //                        std::vector<NISkeleton::NISkeletonUserJoints> skeletonUserJointsVec_;
@@ -1308,6 +1350,48 @@ namespace skeletonTrackerVSNI
                 NISkeletonPosInTorsoTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
              }
 
+
+            {
+                 std::stringstream ss;
+                 ss << coshellVision_->ExecuteACommand("dyn.head");
+                 //std::cout<<"VISION"<<std::endl;
+                 int i = 0;
+                 int j = 0;
+                 double value;
+                 char tmp;
+                 while(ss >> tmp)
+                 {
+                     if( tmp == ';' )
+                     {
+                         ++i;
+                         j = 0;
+                     }
+                     if( tmp == '[' || ( tmp == ',' && j != 4) || tmp == ';' )
+                     {
+                         ss >> value;
+                         NISkeletonRefToHeadTemp_.at<float>(i,j) = value;
+                         ++j;
+                     }
+                     if( tmp == ']' )
+                     {
+                         break;
+                     }
+                 }
+             }
+
+            for(int iBodyPart = 0; iBodyPart < 16; iBodyPart++ )
+             {
+//                std::cout<<"iBodyPart "<<iBodyPart<<std::endl;
+//                std::cout<<"NISkeletonRefToHeadTemp_"<<iBodyPart<<std::endl;
+//                std::cout<<NISkeletonRefToHeadTemp_<<std::endl;
+//                std::cout<<"headToCamMatrixXtionRGB_"<<std::endl;
+//                std::cout<<headToCamMatrixXtionRGB_<<std::endl;
+//                std::cout<<"NISkeletonPosInCamTranslation_"<<std::endl;
+//                std::cout<<NISkeletonPosInCamTranslation_[iBodyPart]<<std::endl;
+                NISkeletonPosInWorldTranslation_[iBodyPart] = (NISkeletonRefToHeadTemp_*headToCamMatrixXtionRGB_)*NISkeletonPosInCamTranslation_[iBodyPart];
+             }
+
+
 //RealWorld Position in torsoreference
 
 //body parts map
@@ -1391,6 +1475,92 @@ namespace skeletonTrackerVSNI
             result["pos"][iUserDetected][15]["T"][0] = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(0,0);
             result["pos"][iUserDetected][15]["T"][1] = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(1,0);
             result["pos"][iUserDetected][15]["T"][2] = (double)NISkeletonPosInTorsoTranslation_[15].at<float>(2,0);
+////
+
+//RealWorld Position in worldreference
+
+//body parts map
+//Head 0
+//Neck 1
+//LeftShoulder 2
+//LeftElbow 3
+//LeftHand 4
+//RightShoulder 5
+//RightElbow 6
+//RightHand 7
+//Torso 8
+//LeftHip 9
+//LeftKnee 10
+//LeftFoot 11
+//RightHip 12
+//RightKnee 13
+//RightFoot 14
+//COM 15
+            result["pos"][iUserDetected][0]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[0].at<float>(0,0);
+            result["pos"][iUserDetected][0]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[0].at<float>(1,0);
+            result["pos"][iUserDetected][0]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[0].at<float>(2,0);
+
+            result["pos"][iUserDetected][1]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[1].at<float>(0,0);
+            result["pos"][iUserDetected][1]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[1].at<float>(1,0);
+            result["pos"][iUserDetected][1]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[1].at<float>(2,0);
+
+            result["pos"][iUserDetected][2]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[2].at<float>(0,0);
+            result["pos"][iUserDetected][2]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[2].at<float>(1,0);
+            result["pos"][iUserDetected][2]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[2].at<float>(2,0);
+
+            result["pos"][iUserDetected][3]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[3].at<float>(0,0);
+            result["pos"][iUserDetected][3]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[3].at<float>(1,0);
+            result["pos"][iUserDetected][3]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[3].at<float>(2,0);
+
+            result["pos"][iUserDetected][4]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[4].at<float>(0,0);
+            result["pos"][iUserDetected][4]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[4].at<float>(1,0);
+            result["pos"][iUserDetected][4]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[4].at<float>(2,0);
+
+            result["pos"][iUserDetected][5]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[5].at<float>(0,0);
+            result["pos"][iUserDetected][5]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[5].at<float>(1,0);
+            result["pos"][iUserDetected][5]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[5].at<float>(2,0);
+
+            result["pos"][iUserDetected][6]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[6].at<float>(0,0);
+            result["pos"][iUserDetected][6]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[6].at<float>(1,0);
+            result["pos"][iUserDetected][6]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[6].at<float>(2,0);
+
+            result["pos"][iUserDetected][7]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[7].at<float>(0,0);
+            result["pos"][iUserDetected][7]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[7].at<float>(1,0);
+            result["pos"][iUserDetected][7]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[7].at<float>(2,0);
+
+            result["pos"][iUserDetected][8]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[8].at<float>(0,0);
+            result["pos"][iUserDetected][8]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[8].at<float>(1,0);
+            result["pos"][iUserDetected][8]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[8].at<float>(2,0);
+
+            result["pos"][iUserDetected][9]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[9].at<float>(0,0);
+            result["pos"][iUserDetected][9]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[9].at<float>(1,0);
+            result["pos"][iUserDetected][9]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[9].at<float>(2,0);
+
+            result["pos"][iUserDetected][10]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[10].at<float>(0,0);
+            result["pos"][iUserDetected][10]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[10].at<float>(1,0);
+            result["pos"][iUserDetected][10]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[10].at<float>(2,0);
+
+            result["pos"][iUserDetected][11]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[11].at<float>(0,0);
+            result["pos"][iUserDetected][11]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[11].at<float>(1,0);
+            result["pos"][iUserDetected][11]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[11].at<float>(2,0);
+
+
+            result["pos"][iUserDetected][12]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[12].at<float>(0,0);
+            result["pos"][iUserDetected][12]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[12].at<float>(1,0);
+            result["pos"][iUserDetected][12]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[12].at<float>(2,0);
+
+            result["pos"][iUserDetected][13]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[13].at<float>(0,0);
+            result["pos"][iUserDetected][13]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[13].at<float>(1,0);
+            result["pos"][iUserDetected][13]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[13].at<float>(2,0);
+
+            result["pos"][iUserDetected][14]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[14].at<float>(0,0);
+            result["pos"][iUserDetected][14]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[14].at<float>(1,0);
+            result["pos"][iUserDetected][14]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[14].at<float>(2,0);
+
+            result["pos"][iUserDetected][15]["WorldT"][0] = (double)NISkeletonPosInWorldTranslation_[15].at<float>(0,0);
+            result["pos"][iUserDetected][15]["WorldT"][1] = (double)NISkeletonPosInWorldTranslation_[15].at<float>(1,0);
+            result["pos"][iUserDetected][15]["WorldT"][2] = (double)NISkeletonPosInWorldTranslation_[15].at<float>(2,0);
+
 
             depth_->ConvertRealWorldToProjective(16, ptJointPosReal, ptJointPosProjective);
 
